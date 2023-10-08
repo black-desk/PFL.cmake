@@ -169,7 +169,7 @@ function(pfl_add_library)
   endif()
 
   if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/apps" AND PFL_ADD_LIBRARY_APPS)
-    foreach(APP ${PFL_ADD_LIBRARY_APP})
+    foreach(APP ${PFL_ADD_LIBRARY_APPS})
       add_subdirectory("${APP}")
     endforeach()
   endif()
