@@ -11,13 +11,17 @@ endif()
 set_property(GLOBAL PROPERTY PFL_INITIALIZED true)
 
 function(pfl_init)
-  cmake_parse_arguments(PFL_INIT "" "ENABLE_TESTING;BUILD_EXAMPLES" "" ${ARGN})
+  cmake_parse_arguments(PFL_INIT "" "ENABLE_TESTING;BUILD_EXAMPLES" "EXTERNALS"
+                        ${ARGN})
   set(PFL_ENABLE_TESTING
       ${PFL_INIT_ENABLE_TESTING}
       PARENT_SCOPE)
   set(PFL_BUILD_EXAMPLES
       ${PFL_INIT_BUILD_EXAMPLES}
       PARENT_SCOPE)
+  foreach(EXTERNAL ${PFL_INIT_EXTERNALS})
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/external/${EXTERNAL})
+  endforeach()
 endfunction()
 
 function(pfl_configure_files)
