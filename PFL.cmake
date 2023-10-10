@@ -10,10 +10,14 @@ endif()
 
 set_property(GLOBAL PROPERTY PFL_INITIALIZED true)
 
-function(pfl_add_subdirectory)
-  cmake_parse_arguments(PFL_ADD_SUBDIRECTORY "" "TARGET_PREFIX" "" ${ARGN})
-  set(PFL_PREFIX ${PFL_ADD_SUBDIRECTORY_TARGET_PREFIX})
-  add_subdirectory(${PFL_ADD_SUBDIRECTORY_UNPARSED_ARGUMENTS})
+function(pfl_init)
+  cmake_parse_arguments(PFL_INIT "" "ENABLE_TESTING;BUILD_EXAMPLES" "" ${ARGN})
+  set(PFL_ENABLE_TESTING
+      ${PFL_INIT_ENABLE_TESTING}
+      PARENT_SCOPE)
+  set(PFL_BUILD_EXAMPLES
+      ${PFL_INIT_BUILD_EXAMPLES}
+      PARENT_SCOPE)
 endfunction()
 
 function(pfl_configure_files)
@@ -44,9 +48,28 @@ function(pfl_configure_files)
       PARENT_SCOPE)
 endfunction()
 
-function(pfl_add_library)
-  message(STATUS "PFL: Building library at" "${CMAKE_CURRENT_SOURCE_DIR} ...")
+function(pfl_add_libraries)
+  message(
+    STATUS
+      "PFL:${PFL_MESSAGE_INDENT} Adding libraries at ${CMAKE_CURRENT_SOURCE_DIR} ..."
+  )
+  set(PFL_MESSAGE_INDENT "${PFL_MESSAGE_INDENT}  ")
 
+  cmake_path(GET CMAKE_CURRENT_SOURCE_DIR FILENAME TARGET_DIR_NAME)
+  string(REPLACE " " "_" TARGET_NAME "${TARGET_DIR_NAME}")
+
+  if(PFL_PREFIX)
+    set(PFL_PREFIX "${PFL_PREFIX}::${TARGET_DIR_NAME}")
+  else()
+    set(PFL_PREFIX "${TARGET_DIR_NAME}")
+  endif()
+
+  foreach(LIB ${ARGN})
+    add_subdirectory(libs/${LIB})
+  endforeach()
+endfunction()
+
+function(pfl_add_library)
   cmake_parse_arguments(
     PFL_ADD_LIBRARY "HEADER_ONLY;INTERNAL;NO_INSTALL"
     "OUTPUT_NAME;SOVERSION;VERSION;TYPE"
@@ -64,7 +87,11 @@ function(pfl_add_library)
 
   string(REPLACE "__" "::" TARGET_EXPORT_NAME "${TARGET_NAME}")
 
-  message(STATUS "PFL: Adding library ${TARGET_EXPORT_NAME} ...")
+  message(
+    STATUS
+      "PFL:${PFL_MESSAGE_INDENT} Adding library ${TARGET_EXPORT_NAME} at ${CMAKE_CURRENT_SOURCE_DIR} ..."
+  )
+  set(PFL_MESSAGE_INDENT "${PFL_MESSAGE_INDENT}  ")
 
   pfl_configure_files(INS ${PFL_ADD_LIBRARY_INS} HEADERS
                       PFL_ADD_LIBRARY_HEADERS SOURCES PFL_ADD_LIBRARY_SOURCES)
@@ -83,7 +110,9 @@ function(pfl_add_library)
                           PROPERTIES SOVERSION ${PFL_ADD_LIBRARY_SOVERSION})
   endif()
 
-  add_library("${TARGET_EXPORT_NAME}" ALIAS "${TARGET_NAME}")
+  if(NOT "${TARGET_EXPORT_NAME}" STREQUAL "${TARGET_NAME}")
+    add_library("${TARGET_EXPORT_NAME}" ALIAS "${TARGET_NAME}")
+  endif()
 
   set_target_properties("${TARGET_NAME}" PROPERTIES EXPORT_NAME
                                                     ${TARGET_DIR_NAME})
@@ -156,29 +185,50 @@ function(pfl_add_library)
     endif()
   endif()
 
-  if(EXISTS tests AND PFL_ENABLE_TESTING)
-    add_subdirectory(tests)
+  if(PFL_PREFIX)
+    set(PFL_PREFIX "${PFL_PREFIX}::${TARGET_DIR_NAME}")
+  else()
+    set(PFL_PREFIX "${TARGET_DIR_NAME}")
   endif()
 
-  if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/examples"
-     AND PFL_ADD_LIBRARY_EXAMPLES
-     AND PFL_BUILD_EXAMPLES)
+  if(PFL_ENABLE_TESTING AND EXISTS tests)
+    message(
+      STATUS
+        "PFL:${PFL_MESSAGE_INDENT} Adding tests for library ${TARGET_EXPORT_NAME} at ${CMAKE_CURRENT_SOURCE_DIR}/tests ..."
+    )
+    set(PFL_MESSAGE_INDENT "${PFL_MESSAGE_INDENT}  ")
+    add_subdirectory(tests)
+    string(SUBSTRING "${PFL_MESSAGE_INDENT}" 2 -1 PFL_MESSAGE_INDENT)
+  endif()
+
+  if(PFL_ADD_LIBRARY_EXAMPLES
+     AND PFL_BUILD_EXAMPLES
+     AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/examples")
+    message(
+      STATUS
+        "PFL:${PFL_MESSAGE_INDENT} Adding examples for library ${TARGET_EXPORT_NAME} at ${CMAKE_CURRENT_SOURCE_DIR}/examples ..."
+    )
+    set(PFL_MESSAGE_INDENT "${PFL_MESSAGE_INDENT}  ")
     foreach(EXAMPLE ${PFL_ADD_LIBRARY_EXAMPLES})
       add_subdirectory("examples/${EXAMPLE}")
     endforeach()
+    string(SUBSTRING "${PFL_MESSAGE_INDENT}" 2 -1 PFL_MESSAGE_INDENT)
   endif()
 
-  if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/apps" AND PFL_ADD_LIBRARY_APPS)
+  if(PFL_ADD_LIBRARY_APPS AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/apps")
+    message(
+      STATUS
+        "PFL:${PFL_MESSAGE_INDENT} Adding apps for library ${TARGET_EXPORT_NAME} at ${CMAKE_CURRENT_SOURCE_DIR}/apps ..."
+    )
+    set(PFL_MESSAGE_INDENT "${PFL_MESSAGE_INDENT}  ")
     foreach(APP ${PFL_ADD_LIBRARY_APPS})
-      add_subdirectory("${APP}")
+      add_subdirectory(apps/"${APP}")
     endforeach()
+    string(SUBSTRING "${PFL_MESSAGE_INDENT}" 2 -1 PFL_MESSAGE_INDENT)
   endif()
 endfunction()
 
 function(pfl_add_executable)
-  message(STATUS "PFL: Building executable at"
-                 "${CMAKE_CURRENT_SOURCE_DIR} ...")
-
   cmake_parse_arguments(
     PFL_ADD_EXECUTABLE "LIBEXEC;INTERNAL;NO_INSTALL" "OUTPUT_NAME"
     "INS;SOURCES;HEADERS;LINK_LIBRARIES;COMPILE_FEATURES" ${ARGN})
@@ -193,7 +243,11 @@ function(pfl_add_executable)
     set(TARGET_NAME "${TARGET_PREFIX}__${TARGET_NAME}")
   endif()
 
-  message(STATUS "PFL: Adding executable ${TARGET_NAME} ...")
+  message(
+    STATUS
+      "PFL:${PFL_MESSAGE_INDENT} Adding executable ${TARGET_NAME} at ${CMAKE_CURRENT_SOURCE_DIR} ..."
+  )
+  set(PFL_MESSAGE_INDENT "${PFL_MESSAGE_INDENT}  ")
 
   pfl_configure_files(
     INS ${PFL_ADD_EXECUTABLE_INS} HEADERS PFL_ADD_EXECUTABLE_HEADERS SOURCES
