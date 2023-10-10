@@ -199,7 +199,7 @@ function(pfl_add_library)
     set(PFL_PREFIX "${TARGET_DIR_NAME}")
   endif()
 
-  if(PFL_ENABLE_TESTING AND EXISTS tests)
+  if(PFL_ENABLE_TESTING AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests")
     message(
       STATUS
         "PFL:${PFL_MESSAGE_INDENT} Adding tests for library ${TARGET_EXPORT_NAME} at ${CMAKE_CURRENT_SOURCE_DIR}/tests ..."
