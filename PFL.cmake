@@ -132,8 +132,13 @@ function(pfl_add_library)
            ${PFL_ADD_LIBRARY_HEADERS})
 
   if(NOT PFL_ADD_LIBRARY_HEADER_ONLY)
-    target_include_directories(${TARGET_NAME}
-                               PRIVATE src ${CMAKE_CURRENT_BINARY_DIR}/src)
+    if(PFL_ADD_LIBRARY_INTERNAL)
+      target_include_directories(${TARGET_NAME}
+                                 PUBLIC src ${CMAKE_CURRENT_BINARY_DIR}/src)
+    else()
+      target_include_directories(${TARGET_NAME}
+                                 PRIVATE src ${CMAKE_CURRENT_BINARY_DIR}/src)
+    endif()
   endif()
 
   if(PFL_ADD_LIBRARY_LINK_LIBRARIES)
