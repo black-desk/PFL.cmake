@@ -67,29 +67,59 @@ endfunction()
 # This function is used to add libraries under the `libs` directory. It just
 # takes in a string list contains the directory name under `libs`.
 function(pfl_add_libraries)
+  cmake_parse_arguments(PFL_ADD_LIBRARIES "" "VERSION" "LIBS" ${ARGN})
+
   message(
     STATUS
       "PFL:${PFL_MESSAGE_INDENT} Adding libraries at ${CMAKE_CURRENT_SOURCE_DIR}"
   )
+
   set(PFL_MESSAGE_INDENT "${PFL_MESSAGE_INDENT}  ")
 
   cmake_path(GET CMAKE_CURRENT_SOURCE_DIR FILENAME TARGET_DIR_NAME)
 
-  if ("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
+  if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
     set(TARGET_DIR_NAME ${PROJECT_NAME})
   endif()
 
   string(REPLACE " " "_" TARGET_NAME "${TARGET_DIR_NAME}")
 
   if(PFL_PREFIX)
-    set(PFL_PREFIX "${PFL_PREFIX}::${TARGET_DIR_NAME}")
+    set(PFL_PREFIX "${PFL_PREFIX}::${TARGET_NAME}")
   else()
-    set(PFL_PREFIX "${TARGET_DIR_NAME}")
+    set(PFL_PREFIX "${TARGET_NAME}")
   endif()
 
-  foreach(LIB ${ARGN})
+  foreach(LIB ${PFL_ADD_LIBRARIES_LIBS})
     add_subdirectory(libs/${LIB})
   endforeach()
+
+  include(GNUInstallDirs)
+
+  if(EXISTS
+     ${CMAKE_CURRENT_SOURCE_DIR}/misc/cmake/${TARGET_NAME}-config.cmake.in)
+    include(CMakePackageConfigHelpers)
+    # This will be used to replace @PACKAGE_cmakeModulesDir@
+    set(cmakeModulesDir cmake)
+
+    configure_package_config_file(
+      misc/cmake/${TARGET_NAME}-config.cmake.in
+      misc/cmake/${TARGET_NAME}-config.cmake
+      INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${TARGET_NAME}
+      PATH_VARS cmakeModulesDir
+      NO_SET_AND_CHECK_MACRO NO_CHECK_REQUIRED_COMPONENTS_MACRO)
+
+    write_basic_package_version_file(
+      ${CMAKE_CURRENT_BINARY_DIR}/misc/cmake/${TARGET_NAME}-config-version.cmake
+      VERSION ${PFL_ADD_LIBRARIES_VERSION}
+      COMPATIBILITY SameMajorVersion)
+
+    install(
+      FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/misc/cmake/${TARGET_NAME}-config.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/misc/cmake/${TARGET_NAME}-config-version.cmake
+      DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${TARGET_NAME})
+  endif()
 endfunction()
 
 # This function is used to add a library.
@@ -126,7 +156,7 @@ function(pfl_add_library)
 
   cmake_path(GET CMAKE_CURRENT_SOURCE_DIR FILENAME TARGET_DIR_NAME)
 
-  if ("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
+  if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
     set(TARGET_DIR_NAME ${PROJECT_NAME})
   endif()
 
@@ -213,7 +243,7 @@ function(pfl_add_library)
 
     install(
       EXPORT "${TARGET_NAME}"
-      DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${TARGET_NAME}
+      DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
       FILE "${TARGET_NAME}.cmake"
       NAMESPACE ${PFL_PREFIX}::)
 
@@ -239,7 +269,7 @@ function(pfl_add_library)
         FILES
           ${CMAKE_CURRENT_BINARY_DIR}/misc/cmake/${TARGET_NAME}-config.cmake
           ${CMAKE_CURRENT_BINARY_DIR}/misc/cmake/${TARGET_NAME}-config-version.cmake
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${TARGET_NAME})
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME})
     endif()
   endif()
 
