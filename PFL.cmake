@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Chen Linxuan <me@black-desk.cn>
+#
+# SPDX-License-Identifier: LGPL-3.0-or-later
+
 cmake_minimum_required(VERSION 3.23 FATAL_ERROR)
 
 get_property(
@@ -10,6 +14,14 @@ endif()
 
 set_property(GLOBAL PROPERTY PFL_INITIALIZED true)
 
+# You should call this function in your top level CMakeLists.txt to tell
+# PFL.cmake some global settings about your project.
+#
+# ENABLE_TESTING bool: Whether to build tests for libraries or not.
+#
+# BUILD_EXAMPLES bool: Whether to build examples for libraries or not.
+#
+# EXTERNALS list of string: External projects to build.
 function(pfl_init)
   cmake_parse_arguments(PFL_INIT "" "ENABLE_TESTING;BUILD_EXAMPLES" "EXTERNALS"
                         ${ARGN})
@@ -24,7 +36,7 @@ function(pfl_init)
   endforeach()
 endfunction()
 
-function(pfl_configure_files)
+function(__pfl_configure_files)
   cmake_parse_arguments(PFL_CONFIGURE_FILES "" "HEADERS;SOURCES" "INS" ${ARGN})
 
   foreach(IN_FILE ${PFL_CONFIGURE_FILES_INS})
@@ -52,10 +64,12 @@ function(pfl_configure_files)
       PARENT_SCOPE)
 endfunction()
 
+# This function is used to add libraries under the `libs` directory. It just
+# takes in a string list contains the directory name under `libs`.
 function(pfl_add_libraries)
   message(
     STATUS
-      "PFL:${PFL_MESSAGE_INDENT} Adding libraries at ${CMAKE_CURRENT_SOURCE_DIR} ..."
+      "PFL:${PFL_MESSAGE_INDENT} Adding libraries at ${CMAKE_CURRENT_SOURCE_DIR}"
   )
   set(PFL_MESSAGE_INDENT "${PFL_MESSAGE_INDENT}  ")
 
@@ -73,6 +87,33 @@ function(pfl_add_libraries)
   endforeach()
 endfunction()
 
+# This function is used to add a library.
+#
+# HEADER_ONLY option: Whether this library is a header only library.
+#
+# INTERNAL option: Whether this library is a internal library.
+#
+# OUTPUT_NAME string: The output file name of this library.
+#
+# SOVERSION string: The soversion of this library.
+#
+# VERSION string: The version of this library.
+#
+# TYPE [STATIC | SHARED]: The type of this library.
+#
+# INS list of string: .in files to configure, it use @ONLY to configure_file.
+#
+# SOURCE list of string: file names of source and private headers.
+#
+# HEADERS list of string: file names of public headers.
+#
+# LINK_LIBRARIES: arguments passed to target_link_libraries.
+#
+# COMPILE_FEATURES: arguments target_compile_features.
+#
+# APPS: list of string: directory names under "apps" directory.
+#
+# EXAMPLES: list of string: directory names under "examples" directory.
 function(pfl_add_library)
   cmake_parse_arguments(
     PFL_ADD_LIBRARY "HEADER_ONLY;INTERNAL" "OUTPUT_NAME;SOVERSION;VERSION;TYPE"
@@ -92,12 +133,12 @@ function(pfl_add_library)
 
   message(
     STATUS
-      "PFL:${PFL_MESSAGE_INDENT} Adding library ${TARGET_EXPORT_NAME} at ${CMAKE_CURRENT_SOURCE_DIR} ..."
+      "PFL:${PFL_MESSAGE_INDENT} Adding library ${TARGET_EXPORT_NAME} at ${CMAKE_CURRENT_SOURCE_DIR}"
   )
   set(PFL_MESSAGE_INDENT "${PFL_MESSAGE_INDENT}  ")
 
-  pfl_configure_files(INS ${PFL_ADD_LIBRARY_INS} HEADERS
-                      PFL_ADD_LIBRARY_HEADERS SOURCES PFL_ADD_LIBRARY_SOURCES)
+  __pfl_configure_files(INS ${PFL_ADD_LIBRARY_INS} HEADERS
+                        PFL_ADD_LIBRARY_HEADERS SOURCES PFL_ADD_LIBRARY_SOURCES)
 
   if(PFL_ADD_LIBRARY_HEADER_ONLY)
     add_library("${TARGET_NAME}" INTERFACE)
@@ -202,7 +243,7 @@ function(pfl_add_library)
   if(PFL_ENABLE_TESTING AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests")
     message(
       STATUS
-        "PFL:${PFL_MESSAGE_INDENT} Adding tests for library ${TARGET_EXPORT_NAME} at ${CMAKE_CURRENT_SOURCE_DIR}/tests ..."
+        "PFL:${PFL_MESSAGE_INDENT} Adding tests for library ${TARGET_EXPORT_NAME} at ${CMAKE_CURRENT_SOURCE_DIR}/tests"
     )
     set(PFL_MESSAGE_INDENT "${PFL_MESSAGE_INDENT}  ")
     add_subdirectory(tests)
@@ -214,7 +255,7 @@ function(pfl_add_library)
      AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/examples")
     message(
       STATUS
-        "PFL:${PFL_MESSAGE_INDENT} Adding examples for library ${TARGET_EXPORT_NAME} at ${CMAKE_CURRENT_SOURCE_DIR}/examples ..."
+        "PFL:${PFL_MESSAGE_INDENT} Adding examples for library ${TARGET_EXPORT_NAME} at ${CMAKE_CURRENT_SOURCE_DIR}/examples"
     )
     set(PFL_MESSAGE_INDENT "${PFL_MESSAGE_INDENT}  ")
     foreach(EXAMPLE ${PFL_ADD_LIBRARY_EXAMPLES})
@@ -226,7 +267,7 @@ function(pfl_add_library)
   if(PFL_ADD_LIBRARY_APPS AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/apps")
     message(
       STATUS
-        "PFL:${PFL_MESSAGE_INDENT} Adding apps for library ${TARGET_EXPORT_NAME} at ${CMAKE_CURRENT_SOURCE_DIR}/apps ..."
+        "PFL:${PFL_MESSAGE_INDENT} Adding apps for library ${TARGET_EXPORT_NAME} at ${CMAKE_CURRENT_SOURCE_DIR}/apps"
     )
     set(PFL_MESSAGE_INDENT "${PFL_MESSAGE_INDENT}  ")
     foreach(APP ${PFL_ADD_LIBRARY_APPS})
@@ -236,6 +277,20 @@ function(pfl_add_library)
   endif()
 endfunction()
 
+# This function is used to add executable, you should call this function if your
+# source under src/ is the source code of your executable file. For examples:
+# directories under apps, directories under examples or your project root if
+# your project is not a library but a application.
+#
+# LIBEXEC option: Whether your executable is a application should be used by
+# user directly or not. LIBEXEC executable will be installed to the LIBEXEC dir.
+#
+# INTERNAL option: Whether your executable is a internal executable. Internal
+# executable will not be install at all.
+#
+# OUTPUT_NAME string: The output file name of your executable.
+#
+# Other parameters is just like pfl_add_library.
 function(pfl_add_executable)
   cmake_parse_arguments(
     PFL_ADD_EXECUTABLE "LIBEXEC;INTERNAL" "OUTPUT_NAME;INSTALL_PREFIX"
@@ -253,11 +308,11 @@ function(pfl_add_executable)
 
   message(
     STATUS
-      "PFL:${PFL_MESSAGE_INDENT} Adding executable ${TARGET_NAME} at ${CMAKE_CURRENT_SOURCE_DIR} ..."
+      "PFL:${PFL_MESSAGE_INDENT} Adding executable ${TARGET_NAME} at ${CMAKE_CURRENT_SOURCE_DIR}"
   )
   set(PFL_MESSAGE_INDENT "${PFL_MESSAGE_INDENT}  ")
 
-  pfl_configure_files(
+  __pfl_configure_files(
     INS ${PFL_ADD_EXECUTABLE_INS} HEADERS PFL_ADD_EXECUTABLE_HEADERS SOURCES
     PFL_ADD_EXECUTABLE_SOURCES)
 
