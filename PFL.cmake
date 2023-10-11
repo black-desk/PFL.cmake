@@ -26,7 +26,7 @@ function(pfl_init)
   cmake_parse_arguments(PFL_INIT "" "ENABLE_TESTING;BUILD_EXAMPLES" "EXTERNALS"
                         ${ARGN})
 
-  message(WARNING "PFL: Development Version")
+  message(STATUS "PFL: Version 0.1.0")
 
   set(PFL_ENABLE_TESTING
       ${PFL_INIT_ENABLE_TESTING}
