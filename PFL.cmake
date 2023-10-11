@@ -25,6 +25,9 @@ set_property(GLOBAL PROPERTY PFL_INITIALIZED true)
 function(pfl_init)
   cmake_parse_arguments(PFL_INIT "" "ENABLE_TESTING;BUILD_EXAMPLES" "EXTERNALS"
                         ${ARGN})
+
+  message(WARNING "PFL: Development Version")
+
   set(PFL_ENABLE_TESTING
       ${PFL_INIT_ENABLE_TESTING}
       PARENT_SCOPE)
