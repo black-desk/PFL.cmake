@@ -10,4 +10,4 @@ cd "$repoRoot"
 
 version="$(git describe --tags)"
 
-sed -i "s/--==Development Version==--/Version: ${version}/g" PFL.cmake
+sed -i "s/WARNING \"PFL: --==Development Version==--\"/STATUS \"PFL: --==Version: ${version}==--\"/g" PFL.cmake
