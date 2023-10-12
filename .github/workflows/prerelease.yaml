@@ -1,13 +1,12 @@
-name: "Auto release"
+name: "Auto prerelease"
 
 on:
   push:
     tags:
-      - "v*"
-      - "!v*-*"
+      - "v*-*"
 
 jobs:
-  release:
+  prerelease:
     runs-on: "ubuntu-latest"
     permissions:
       contents: write
