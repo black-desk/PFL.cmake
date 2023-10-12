@@ -13,6 +13,8 @@ jobs:
       actions: write
     steps:
       - uses: actions/checkout@v3
+      - name: run tools/release.sh
+        run: tools/release.sh
       - uses: "marvinpinto/action-automatic-releases@latest"
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
