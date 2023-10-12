@@ -12,7 +12,7 @@ jobs:
       contents: write
       actions: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: run tools/release.sh
         run: tools/release.sh
       - uses: "marvinpinto/action-automatic-releases@latest"
