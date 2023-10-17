@@ -100,7 +100,7 @@ function(pfl_add_libraries)
     add_subdirectory(libs/${LIB})
   endforeach()
 
-  if(PFL_INSTALL)
+  if(NOT PFL_INSTALL)
     return()
   endif()
 
