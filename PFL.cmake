@@ -50,10 +50,10 @@ function(__pfl_configure_files)
 
     configure_file(${IN_FILE} ${CMAKE_CURRENT_BINARY_DIR}/${OUT_FILE} @ONLY)
 
-    if(OUT_FILE MATCHES "^include\/.*\.h(h|pp)?$")
+    if(OUT_FILE MATCHES "^(./)?include\/.*\.h(h|pp)?$")
       list(APPEND ${PFL_CONFIGURE_FILES_HEADERS}
            ${CMAKE_CURRENT_BINARY_DIR}/${OUT_FILE})
-    elseif(OUT_FILE MATCHES "^src\/.*\.(h(h|pp)?|cpp)$")
+    elseif(OUT_FILE MATCHES "^(./)?src\/.*\.(h(h|pp)?|cpp)$")
       list(APPEND ${PFL_CONFIGURE_FILES_SOURCES}
            ${CMAKE_CURRENT_BINARY_DIR}/${OUT_FILE})
     else()
