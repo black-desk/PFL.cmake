@@ -166,6 +166,11 @@ function(pfl_add_library)
 
   cmake_path(GET CMAKE_CURRENT_SOURCE_DIR FILENAME TARGET_DIR_NAME)
 
+  if(TARGET_DIR_NAME MATCHES ".*__.*")
+    message(
+      FATAL_ERROR "Invalid directory name ${TARGET_DIR_NAME} contains '__'.")
+  endif()
+
   if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
     set(TARGET_DIR_NAME ${PROJECT_NAME})
   endif()
@@ -176,13 +181,14 @@ function(pfl_add_library)
 
   if(TARGET_PREFIX)
     set(TARGET_NAME "${TARGET_PREFIX}__${TARGET_NAME}")
+    string(REPLACE "__" "::" TARGET_EXPORT_NAME "${TARGET_NAME}")
+  else()
+    set(TARGET_EXPORT_NAME "${TARGET_DIR_NAME}::${TARGET_NAME}")
   endif()
-
-  string(REPLACE "__" "::" TARGET_EXPORT_NAME "${TARGET_NAME}")
 
   message(
     STATUS
-      "PFL:${PFL_MESSAGE_INDENT} Adding library ${TARGET_EXPORT_NAME} at ${CMAKE_CURRENT_SOURCE_DIR}"
+      "PFL:${PFL_MESSAGE_INDENT} Adding library ${TARGET_NAME} as ${TARGET_EXPORT_NAME} at ${CMAKE_CURRENT_SOURCE_DIR}"
   )
   set(PFL_MESSAGE_INDENT "${PFL_MESSAGE_INDENT}  ")
 
