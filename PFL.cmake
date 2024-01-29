@@ -37,6 +37,10 @@ function(pfl_init)
   set(PFL_INSTALL
       ${PFL_INIT_INSTALL}
       PARENT_SCOPE)
+  set(PFL_PREFIX
+      ${PROJECT_NAME}
+      PARENT_SCOPE)
+
   foreach(EXTERNAL ${PFL_INIT_EXTERNALS})
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/external/${EXTERNAL})
   endforeach()
@@ -173,18 +177,17 @@ function(pfl_add_library)
 
   if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
     set(TARGET_DIR_NAME ${PROJECT_NAME})
+    if(NOT OUTPUT_NAME)
+      set(OUTPUT_NAME ${PROJECT_NAME})
+    endif()
   endif()
 
   string(REPLACE " " "_" TARGET_NAME "${TARGET_DIR_NAME}")
 
   string(REPLACE "::" "__" TARGET_PREFIX "${PFL_PREFIX}")
 
-  if(TARGET_PREFIX)
-    set(TARGET_NAME "${TARGET_PREFIX}__${TARGET_NAME}")
-    string(REPLACE "__" "::" TARGET_EXPORT_NAME "${TARGET_NAME}")
-  else()
-    set(TARGET_EXPORT_NAME "${TARGET_DIR_NAME}::${TARGET_NAME}")
-  endif()
+  set(TARGET_NAME "${TARGET_PREFIX}__${TARGET_NAME}")
+  string(REPLACE "__" "::" TARGET_EXPORT_NAME "${TARGET_NAME}")
 
   message(
     STATUS
