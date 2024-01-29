@@ -177,8 +177,8 @@ function(pfl_add_library)
 
   if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
     set(TARGET_DIR_NAME ${PROJECT_NAME})
-    if(NOT OUTPUT_NAME)
-      set(OUTPUT_NAME ${PROJECT_NAME})
+    if(NOT PFL_ADD_LIBRARY_OUTPUT_NAME)
+      set(PFL_ADD_LIBRARY_OUTPUT_NAME ${PROJECT_NAME})
     endif()
   endif()
 
