@@ -189,9 +189,13 @@ function(pfl_add_library)
   set(TARGET_NAME "${TARGET_PREFIX}__${TARGET_NAME}")
   string(REPLACE "__" "::" TARGET_EXPORT_NAME "${TARGET_NAME}")
 
+  if(NOT PFL_ADD_LIBRARY_OUTPUT_NAME)
+    set(PFL_ADD_LIBRARY_OUTPUT_NAME ${TARGET_NAME})
+  endif()
+
   message(
     STATUS
-      "PFL:${PFL_MESSAGE_INDENT} Adding library ${TARGET_NAME} as ${TARGET_EXPORT_NAME} at ${CMAKE_CURRENT_SOURCE_DIR}"
+      "PFL:${PFL_MESSAGE_INDENT} Adding library ${PFL_ADD_LIBRARY_OUTPUT_NAME} as ${TARGET_EXPORT_NAME} at ${CMAKE_CURRENT_SOURCE_DIR}"
   )
   set(PFL_MESSAGE_INDENT "${PFL_MESSAGE_INDENT}  ")
 
@@ -219,10 +223,8 @@ function(pfl_add_library)
   set_target_properties("${TARGET_NAME}" PROPERTIES EXPORT_NAME
                                                     ${TARGET_DIR_NAME})
 
-  if(PFL_ADD_LIBRARY_OUTPUT_NAME)
-    set_target_properties("${TARGET_NAME}"
-                          PROPERTIES OUTPUT_NAME ${PFL_ADD_LIBRARY_OUTPUT_NAME})
-  endif()
+  set_target_properties("${TARGET_NAME}"
+                        PROPERTIES OUTPUT_NAME ${PFL_ADD_LIBRARY_OUTPUT_NAME})
 
   target_sources(
     ${TARGET_NAME}
@@ -360,13 +362,17 @@ function(pfl_add_executable)
 
   string(REPLACE "::" "__" TARGET_PREFIX "${PFL_PREFIX}")
 
-  if(TARGET_PREFIX)
-    set(TARGET_NAME "${TARGET_PREFIX}__${TARGET_NAME}")
+  set(TARGET_NAME "${TARGET_PREFIX}__${TARGET_NAME}")
+
+  string(REPLACE "__" "::" TARGET_EXPORT_NAME "${TARGET_NAME}")
+
+  if(NOT PFL_ADD_EXECUTABLE_OUTPUT_NAME)
+    set(PFL_ADD_EXECUTABLE_OUTPUT_NAME "${TARGET_NAME}")
   endif()
 
   message(
     STATUS
-      "PFL:${PFL_MESSAGE_INDENT} Adding executable ${TARGET_NAME} at ${CMAKE_CURRENT_SOURCE_DIR}"
+      "PFL:${PFL_MESSAGE_INDENT} Adding executable ${PFL_ADD_EXECUTABLE_OUTPUT_NAME} as ${TARGET_EXPORT_NAME} at ${CMAKE_CURRENT_SOURCE_DIR}"
   )
   set(PFL_MESSAGE_INDENT "${PFL_MESSAGE_INDENT}  ")
 
@@ -376,10 +382,12 @@ function(pfl_add_executable)
 
   add_executable("${TARGET_NAME}" ${PFL_ADD_EXECUTABLE_SOURCES})
 
-  if(PFL_ADD_EXECUTABLE_OUTPUT_NAME)
-    set_target_properties(
-      "${TARGET_NAME}" PROPERTIES OUTPUT_NAME ${PFL_ADD_EXECUTABLE_OUTPUT_NAME})
+  if(NOT "${TARGET_EXPORT_NAME}" STREQUAL "${TARGET_NAME}")
+    add_executable("${TARGET_EXPORT_NAME}" ALIAS "${TARGET_NAME}")
   endif()
+
+  set_target_properties(
+    "${TARGET_NAME}" PROPERTIES OUTPUT_NAME ${PFL_ADD_EXECUTABLE_OUTPUT_NAME})
 
   target_sources(
     ${TARGET_NAME}
