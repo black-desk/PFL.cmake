@@ -1,0 +1,34 @@
+@PACKAGE_INIT@
+
+list(APPEND CMAKE_MODULE_PATH "@PACKAGE_cmakeModulesDir@")
+
+set(PFLLibrariesExampleAllComponents A B C)
+foreach(comp IN LISTS ${PFLLibrariesExampleAllComponents})
+  set(PFLLibrariesExampleCMakeFileOf${comp}
+      "PFLLibrariesExample${comp}-config.cmake")
+endforeach()
+
+if(${CMAKE_FIND_PACKAGE_NAME}_FIND_COMPONENTS)
+  set(comps ${${CMAKE_FIND_PACKAGE_NAME}_FIND_COMPONENTS})
+else()
+  set(comps ${PFLLibrariesExampleAllComponents})
+endif()
+
+set(${CMAKE_FIND_PACKAGE_NAME}_COMPS ${comps})
+
+# Check all required components are available before trying to load any
+foreach(comp IN LISTS ${CMAKE_FIND_PACKAGE_NAME}_COMPS)
+  if(${CMAKE_FIND_PACKAGE_NAME}_FIND_REQUIRED_${comp}
+     AND NOT EXISTS
+         ${CMAKE_CURRENT_LIST_DIR}/${PFLLibrariesExampleCMakeFileOf${comp}})
+    set(${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE
+        "FPLLibrariesExample missing required component: ${comp}")
+    set(${CMAKE_FIND_PACKAGE_NAME}_FOUND FALSE)
+    return()
+  endif()
+endforeach()
+
+foreach(comp IN LISTS ${CMAKE_FIND_PACKAGE_NAME}_comps)
+  include(${CMAKE_CURRENT_LIST_DIR}/${PFLLibrariesExampleCMakeFileOf${comp}}
+          OPTIONAL)
+endforeach()
