@@ -11,3 +11,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: black-desk/checks@v1
+  tests:
+    name: Run tests
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: "Execute ./tests/tests.sh"
+        run: |
+          ./tests/tests.sh
+  pass:
+    name: Pass
+    needs: [checks, tests]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder
+        run: true
