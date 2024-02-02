@@ -1,1 +1,1 @@
-# PFL.cmake example application
+# PFL.cmake example for build single application
