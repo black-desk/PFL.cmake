@@ -12,7 +12,7 @@ if(PFL_INITIALIZED)
   return()
 endif()
 
-set_property(GLOBAL PROPERTY PFL_INITIALIZED true)
+message(WARNING "PFL: --==Development Version==--")
 
 # You should call this function in your top level CMakeLists.txt to tell
 # PFL.cmake some global settings about your project.
@@ -25,8 +25,6 @@ set_property(GLOBAL PROPERTY PFL_INITIALIZED true)
 function(pfl_init)
   cmake_parse_arguments(PFL_INIT "" "INSTALL;ENABLE_TESTING;BUILD_EXAMPLES"
                         "EXTERNALS" ${ARGN})
-
-  message(WARNING "PFL: --==Development Version==--")
 
   set(PFL_ENABLE_TESTING
       ${PFL_INIT_ENABLE_TESTING}
@@ -464,3 +462,5 @@ function(pfl_add_executable)
     DESTINATION ${CMAKE_INSTALL_BINDIR}/${PFL_ADD_EXECUTABLE_INSTALL_PREFIX})
 
 endfunction()
+
+set_property(GLOBAL PROPERTY PFL_INITIALIZED true)
