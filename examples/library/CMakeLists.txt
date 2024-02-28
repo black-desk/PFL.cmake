@@ -9,5 +9,5 @@ include(./cmake/PFL.cmake)
 
 pfl_init(ENABLE_TESTING ON BUILD_EXAMPLES ON INSTALL ON)
 
-pfl_add_library(SOURCES ./src/PFLLibraryExample/lib.cpp HEADERS
+pfl_add_library(SOVERSION 0 SOURCES ./src/PFLLibraryExample/lib.cpp HEADERS
                 ./include/PFLLibraryExample/lib.hpp)

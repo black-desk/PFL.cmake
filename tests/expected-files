@@ -29,7 +29,8 @@ build-install-prefix/lib/cmake/PFLLibraryExample
 build-install-prefix/lib/cmake/PFLLibraryExample/PFLLibraryExample.cmake
 build-install-prefix/lib/cmake/PFLLibraryExample/PFLLibraryExampleConfig.cmake
 build-install-prefix/lib/cmake/PFLLibraryExample/pfllibraryexampleConfigVersion.cmake
-build-install-prefix/lib/libPFLLibrariesExampleA.a
-build-install-prefix/lib/libPFLLibrariesExampleB.a
-build-install-prefix/lib/libPFLLibrariesExampleC.a
-build-install-prefix/lib/libPFLLibraryExample.a
+build-install-prefix/lib/libPFLLibrariesExampleA.so
+build-install-prefix/lib/libPFLLibrariesExampleB.so
+build-install-prefix/lib/libPFLLibrariesExampleC.so
+build-install-prefix/lib/libPFLLibraryExample.so
+build-install-prefix/lib/libPFLLibraryExample.so.0
