@@ -40,7 +40,8 @@ function(pfl_init)
       PARENT_SCOPE)
 
   foreach(EXTERNAL ${PFL_INIT_EXTERNALS})
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/external/${EXTERNAL})
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/external/${EXTERNAL}
+                     EXCLUDE_FROM_ALL)
   endforeach()
 endfunction()
 
