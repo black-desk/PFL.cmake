@@ -12,6 +12,8 @@ if(PFL_INITIALIZED)
   return()
 endif()
 
+set_property(GLOBAL PROPERTY PFL_INITIALIZED true)
+
 message(WARNING "PFL: --==Development Version==--")
 
 # You should call this function in your top level CMakeLists.txt to tell
@@ -471,5 +473,3 @@ function(pfl_add_executable)
   install(TARGETS ${TARGET_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 endfunction()
-
-set_property(GLOBAL PROPERTY PFL_INITIALIZED true)
