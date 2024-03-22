@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: LGPL-3.0-or-later
 
-cmake_minimum_required(VERSION 3.23 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.11.4..3.28.3 FATAL_ERROR)
 
 get_property(
   PFL_INITIALIZED GLOBAL ""
