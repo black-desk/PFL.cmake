@@ -14,11 +14,26 @@ jobs:
   tests:
     name: Run tests
     runs-on: "ubuntu-latest"
+    strategy:
+      fail-fast: false
+      matrix:
+        cmake_version:
+          - 3.11.4 # RHEL 8
+          - 3.13.4 # Debian 9
+          - 3.18.4 # Debian 10
+          - 3.20.2 # RHEL 9
+          - 3.25.1 # Debian 11
+          - 3.28.3 # Debian 12
+          - ''     # latest
     steps:
       - name: Checkout project
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Setup cmake
+        uses: jwlawson/actions-setup-cmake@v1.14
+        with:
+          cmake-version: ${{ matrix.cmake_version }}
       - name: "Execute ./tests/tests.sh"
         run: |
           ./tests/tests.sh
