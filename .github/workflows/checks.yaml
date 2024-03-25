@@ -31,7 +31,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup cmake
-        uses: jwlawson/actions-setup-cmake@v1.14
+        uses: jwlawson/actions-setup-cmake@v2.0
         with:
           cmake-version: ${{ matrix.cmake_version }}
       - name: "Execute ./tests/tests.sh"
