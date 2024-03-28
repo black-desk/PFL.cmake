@@ -1,0 +1,6 @@
+#pragma once
+
+namespace helloworld
+{
+const char *const version = "@PROJECT_NAME@-@PROJECT_VERSION@";
+}

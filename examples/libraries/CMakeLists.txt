@@ -1,12 +1,13 @@
-cmake_minimum_required(VERSION 3.11.4..3.28.3 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.11.4 FATAL_ERROR)
 
 project(
-  PFLLibrariesExample
+  MathUtils
   LANGUAGES CXX
   VERSION 0.1.0)
 
-include(./cmake/PFL.cmake)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+include(PFL)
 
-pfl_init(ENABLE_TESTING ON BUILD_EXAMPLES ON INSTALL ON)
+pfl_init(AUTO)
 
-pfl_add_libraries(LIBS A B C)
+pfl_add_libraries(LIBS Core EXAMPLES example1)

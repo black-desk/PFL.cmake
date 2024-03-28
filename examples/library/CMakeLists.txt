@@ -1,13 +1,21 @@
-cmake_minimum_required(VERSION 3.11.4..3.28.3 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.11.4 FATAL_ERROR)
 
 project(
-  PFLLibraryExample
+  helloworld
   LANGUAGES CXX
   VERSION 0.1.0)
 
-include(./cmake/PFL.cmake)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+include(PFL)
 
-pfl_init(ENABLE_TESTING ON BUILD_EXAMPLES ON INSTALL ON)
+pfl_init(AUTO)
 
-pfl_add_library(SOVERSION 0 SOURCES ./src/PFLLibraryExample/lib.cpp HEADERS
-                ./include/PFLLibraryExample/lib.hpp)
+pfl_add_library(
+  SOVERSION
+  0
+  SOURCES
+  include/helloworld/lib.hpp
+  src/helloworld/configure.hpp.in
+  src/helloworld/lib.cpp
+  APPS
+  helloworld_with_lib)

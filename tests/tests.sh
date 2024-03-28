@@ -1,7 +1,6 @@
 #!/bin/env bash
 
 set -e
-set -x
 
 CMAKE=${CMAKE:="cmake"}
 
@@ -33,13 +32,18 @@ build-and-install "../examples/libraries"
 
 echo "Try to build all examples...Done"
 
-while IFS= read -r line; do
-	[ -f "$line" ] || [ -d "$line" ]
-done <expected-files
-
 rm build -rf
 mkdir build
 pushd build
-cmake .. -DCMAKE_PREFIX_PATH="$(pwd)/../build-install-prefix"
+cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_PREFIX_PATH="$(pwd)/../build-install-prefix"
 cmake --build .
 popd
+
+while IFS= read -r line; do
+	if [ -f "$line" ] || [ -d "$line" ]; then
+                continue;
+        fi
+        echo "Expected $line but not found."
+        exit 255
+done <expected-files
+
