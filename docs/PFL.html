@@ -1,0 +1,2926 @@
+<!doctype html><html lang="en">
+ <head>
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+  <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+  <title>cxx-pflR1: The Pitchfork Layout (PFL)</title>
+<style data-fill-with="stylesheet">/******************************************************************************
+ *                   Style sheet for the W3C specifications                   *
+ *
+ * Special classes handled by this style sheet include:
+ *
+ * Indices
+ *   - .toc for the Table of Contents (<ol class="toc">)
+ *     + <span class="secno"> for the section numbers
+ *   - #toc for the Table of Contents (<nav id="toc">)
+ *   - ul.index for Indices (<a href="#ref">term</a><span>, in § N.M</span>)
+ *   - table.index for Index Tables (e.g. for properties or elements)
+ *
+ * Structural Markup
+ *   - table.data for general data tables
+ *     -> use 'scope' attribute, <colgroup>, <thead>, and <tbody> for best results !
+ *     -> use <table class='complex data'> for extra-complex tables
+ *     -> use <td class='long'> for paragraph-length cell content
+ *     -> use <td class='pre'> when manual line breaks/indentation would help readability
+ *   - dl.switch for switch statements
+ *   - ol.algorithm for algorithms (helps to visualize nesting)
+ *   - .figure and .caption (HTML4) and figure and figcaption (HTML5)
+ *     -> .sidefigure for right-floated figures
+ *   - ins/del
+ *     -> ins/del.c### for candidate and proposed changes (amendments)
+ *
+ * Code
+ *   - pre and code
+ *
+ * Special Sections
+ *   - .note       for informative notes             (div, p, span, aside, details)
+ *   - .example    for informative examples          (div, p, pre, span)
+ *   - .issue      for issues                        (div, p, span)
+ *   - .advisement for loud normative statements     (div, p, strong)
+ *   - .annoying-warning for spec obsoletion notices (div, aside, details)
+ *   - .correction for "candidate corrections"       (div, aside, details, section)
+ *   - .addition   for "candidate additions"         (div, aside, details, section)
+ *   - .correction.proposed for "proposed corrections" (div, aside, details, section)
+ *   - .addition.proposed   for "proposed additions"   (div, aside, details, section)
+ *
+ * Definition Boxes
+ *   - pre.def   for WebIDL definitions
+ *   - table.def for tables that define other entities (e.g. CSS properties)
+ *   - dl.def    for definition lists that define other entitles (e.g. HTML elements)
+ *
+ * Numbering
+ *   - .secno for section numbers in .toc and headings (<span class='secno'>3.2</span>)
+ *   - .marker for source-inserted example/figure/issue numbers (<span class='marker'>Issue 4</span>)
+ *   - ::before styled for CSS-generated issue/example/figure numbers:
+ *     -> Documents wishing to use this only need to add
+ *        figcaption::before,
+ *        .caption::before { content: "Figure "  counter(figure) " ";  }
+ *        .example::before { content: "Example " counter(example) " "; }
+ *        .issue::before   { content: "Issue "   counter(issue) " ";   }
+ *
+ * Header Stuff (ignore, just don't conflict with these classes)
+ *   - .head for the header
+ *   - .copyright for the copyright
+ *
+ * Outdated warning for old specs
+ *
+ * Miscellaneous
+ *   - .overlarge for things that should be as wide as possible, even if
+ *     that overflows the body text area. This can be used on an item or
+ *     on its container, depending on the effect desired.
+ *     Note that this styling basically doesn't help at all when printing,
+ *     since A4 paper isn't much wider than the max-width here.
+ *     It's better to design things to fit into a narrower measure if possible.
+ *
+ *   - js-added ToC jump links (see fixup.js)
+ *
+ ******************************************************************************/
+
+/* color variables included separately for reliability */
+
+/******************************************************************************/
+/*                                    Body                                    */
+/******************************************************************************/
+
+	html {
+	}
+
+	body {
+		counter-reset: example figure issue;
+
+		/* Layout */
+		max-width: 50em;			  /* limit line length to 50em for readability   */
+		margin: 0 auto;				/* center text within page                    */
+		padding: 1.6em 1.5em 2em 50px; /* assume 16px font size for downlevel clients */
+		padding: 1.6em 1.5em 2em calc(26px + 1.5em); /* leave space for status flag    */
+
+		/* Typography */
+		line-height: 1.5;
+		font-family: sans-serif;
+		widows: 2;
+		orphans: 2;
+		word-wrap: break-word;
+		overflow-wrap: break-word;
+		hyphens: auto;
+
+		color: black;
+		color: var(--text);
+		background: white top left fixed no-repeat;
+		background: var(--bg) top left fixed no-repeat;
+		background-size: 25px auto;
+	}
+
+
+/******************************************************************************/
+/*                         Front Matter & Navigation                          */
+/******************************************************************************/
+
+/** Header ********************************************************************/
+
+	div.head { margin-bottom: 1em; }
+	div.head hr { border-style: solid; }
+
+	div.head h1 {
+		font-weight: bold;
+		margin: 0 0 .1em;
+		font-size: 220%;
+	}
+
+	div.head h2 { margin-bottom: 1.5em;}
+
+/** W3C Logo ******************************************************************/
+
+	.head .logo {
+		float: right;
+		margin: 0.4rem 0 0.2rem .4rem;
+	}
+
+	.head img[src*="logos/W3C"] {
+		display: block;
+		border: solid #1a5e9a;
+		border: solid var(--logo-bg);
+		border-width: .65rem .7rem .6rem;
+		border-radius: .4rem;
+		background: #1a5e9a;
+		background: var(--logo-bg);
+		color: white;
+		color: var(--logo-text);
+		font-weight: bold;
+	}
+
+	.head a:hover > img[src*="logos/W3C"],
+	.head a:focus > img[src*="logos/W3C"] {
+		opacity: .8;
+	}
+
+	.head a:active > img[src*="logos/W3C"] {
+		background: #c00;
+		background: var(--logo-active-bg);
+		border-color: #c00;
+		border-color: var(--logo-active-bg);
+	}
+
+	/* see also additional rules in Link Styling section */
+
+/** Copyright *****************************************************************/
+
+	p.copyright,
+	p.copyright small { font-size: small; }
+
+/** Back to Top / ToC Toggle **************************************************/
+
+	@media print {
+		#toc-nav {
+			display: none;
+		}
+	}
+	@media not print {
+		#toc-nav {
+			position: fixed;
+			z-index: 3;
+			bottom: 0; left: 0;
+			margin: 0;
+			min-width: 1.33em;
+			border-top-right-radius: 2rem;
+			box-shadow: 0 0 2px;
+			font-size: 1.5em;
+		}
+		#toc-nav > a {
+			display: block;
+			white-space: nowrap;
+
+			height: 1.33em;
+			padding: .1em 0.3em;
+			margin: 0;
+
+			box-shadow: 0 0 2px;
+			border: none;
+			border-top-right-radius: 1.33em;
+
+			color: #707070;
+			color: var(--tocnav-normal-text);
+			background: white;
+			background: var(--tocnav-normal-bg);
+		}
+		#toc-nav > a:hover,
+		#toc-nav > a:focus {
+			color: black;
+			color: var(--tocnav-hover-text);
+			background: #f8f8f8;
+			background: var(--tocnav-hover-bg);
+		}
+		#toc-nav > a:active {
+			color: #c00;
+			color: var(--tocnav-active-text);
+			background: white;
+			background: var(--tocnav-active-bg);
+		}
+
+		#toc-nav > #toc-jump {
+			padding-bottom: 2em;
+			margin-bottom: -1.9em;
+		}
+
+		/* statusbar gets in the way on keyboard focus; remove once browsers fix */
+		#toc-nav > a[href="#toc"]:not(:hover):focus:last-child {
+			padding-bottom: 1.5rem;
+		}
+
+		#toc-nav:not(:hover) > a:not(:focus) > span + span {
+			/* Ideally this uses :focus-within on #toc-nav */
+			display: none;
+		}
+		#toc-nav > a > span + span {
+			padding-right: 0.2em;
+		}
+	}
+
+/** ToC Sidebar ***************************************************************/
+
+	/* Floating sidebar */
+	@media screen {
+		body.toc-sidebar #toc {
+			position: fixed;
+			top: 0; bottom: 0;
+			left: 0;
+			width: 23.5em;
+			max-width: 80%;
+			max-width: calc(100% - 2em - 26px);
+			overflow: auto;
+			padding: 0 1em;
+			padding-left: 42px;
+			padding-left: calc(1em + 26px);
+			color: black;
+			color: var(--tocsidebar-text);
+			background: inherit;
+			background-color: #f7f8f9;
+			background-color: var(--tocsidebar-bg);
+			z-index: 1;
+			box-shadow: -.1em 0 .25em rgba(0,0,0,.1) inset;
+			box-shadow: -.1em 0 .25em var(--tocsidebar-shadow) inset;
+		}
+		body.toc-sidebar #toc h2 {
+			margin-top: .8rem;
+			font-variant: small-caps;
+			font-variant: all-small-caps;
+			text-transform: lowercase;
+			font-weight: bold;
+			color: gray;
+			color: hsla(203,20%,40%,.7);
+			color: var(--tocsidebar-heading-text);
+		}
+		body.toc-sidebar #toc-jump:not(:focus) {
+			width: 0;
+			height: 0;
+			padding: 0;
+			position: absolute;
+			overflow: hidden;
+		}
+	}
+	/* Hide main scroller when only the ToC is visible anyway */
+	@media screen and (max-width: 28em) {
+		body.toc-sidebar {
+			overflow: hidden;
+		}
+	}
+
+	/* Sidebar with its own space */
+	@media screen and (min-width: 78em) {
+		body:not(.toc-inline) #toc {
+			position: fixed;
+			top: 0; bottom: 0;
+			left: 0;
+			width: 23.5em;
+			overflow: auto;
+			padding: 0 1em;
+			padding-left: 42px;
+			padding-left: calc(1em + 26px);
+			color: black;
+			color: var(--tocsidebar-text);
+			background: inherit;
+			background-color: #f7f8f9;
+			background-color: var(--tocsidebar-bg);
+			z-index: 1;
+			box-shadow: -.1em 0 .25em rgba(0,0,0,.1) inset;
+			box-shadow: -.1em 0 .25em var(--tocsidebar-shadow) inset;
+		}
+		body:not(.toc-inline) #toc h2 {
+			margin-top: .8rem;
+			font-variant: small-caps;
+			font-variant: all-small-caps;
+			text-transform: lowercase;
+			font-weight: bold;
+			color: gray;
+			color: hsla(203,20%,40%,.7);
+			color: var(--tocsidebar-heading-text);
+		}
+
+		body:not(.toc-inline) {
+			padding-left: 29em;
+		}
+		/* See also Overflow section at the bottom */
+
+		body:not(.toc-inline) #toc-jump:not(:focus) {
+			width: 0;
+			height: 0;
+			padding: 0;
+			position: absolute;
+			overflow: hidden;
+		}
+	}
+	@media screen and (min-width: 90em) {
+		body:not(.toc-inline) {
+			margin: 0 4em;
+		}
+	}
+
+/******************************************************************************/
+/*                                Sectioning                                  */
+/******************************************************************************/
+
+/** Headings ******************************************************************/
+
+	h1, h2, h3, h4, h5, h6, dt {
+		page-break-after: avoid;
+		page-break-inside: avoid;
+		font: 100% sans-serif;   /* Reset all font styling to clear out UA styles */
+		font-family: inherit;	/* Inherit the font family. */
+		line-height: 1.2;		/* Keep wrapped headings compact */
+		hyphens: manual;		/* Hyphenated headings look weird */
+	}
+
+	h2, h3, h4, h5, h6 {
+		margin-top: 3rem;
+	}
+
+	h1, h2, h3 {
+		color: #005A9C;
+		color: var(--heading-text);
+	}
+
+	h1 { font-size: 170%; }
+	h2 { font-size: 140%; }
+	h3 { font-size: 120%; }
+	h4 { font-weight: bold; }
+	h5 { font-style: italic; }
+	h6 { font-variant: small-caps; }
+	dt { font-weight: bold; }
+
+/** Subheadings ***************************************************************/
+
+	h1 + h2,
+	#profile-and-date {
+		/* #profile-and-date is a subtitle in an H2 under the H1 */
+		margin-top: 0;
+	}
+	h2 + h3,
+	h3 + h4,
+	h4 + h5,
+	h5 + h6 {
+		margin-top: 1.2em; /* = 1 x line-height */
+	}
+
+/** Section divider ***********************************************************/
+
+	:not(.head) > :not(.head) + hr {
+		font-size: 1.5em;
+		text-align: center;
+		margin: 1em auto;
+		height: auto;
+		color: black;
+		color: var(--hr-text);
+		border: transparent solid 0;
+		background: transparent;
+	}
+	:not(.head) > hr::before {
+		content: "\2727\2003\2003\2727\2003\2003\2727";
+	}
+
+/******************************************************************************/
+/*                            Paragraphs and Lists                            */
+/******************************************************************************/
+
+	p {
+		margin: 1em 0;
+	}
+
+	dd > p:first-child,
+	li > p:first-child {
+		margin-top: 0;
+	}
+
+	ul, ol {
+		margin-left: 0;
+		padding-left: 2em;
+	}
+
+	li {
+		margin: 0.25em 0 0.5em;
+		padding: 0;
+	}
+
+	dl dd {
+		margin: 0 0 .5em 2em;
+	}
+
+	.head dd + dd { /* compact for header */
+		margin-top: -.5em;
+	}
+
+	/* Style for algorithms */
+	ol.algorithm ol:not(.algorithm),
+	.algorithm > ol ol:not(.algorithm) {
+	border-left: 0.5em solid #DEF;
+	border-left: 0.5em solid var(--algo-border);
+	}
+
+	/* Put nice boxes around each algorithm. */
+	[data-algorithm]:not(.heading) {
+	 padding: .5em;
+	 border: thin solid #ddd;
+	 border: thin solid var(--algo-border);
+	 border-radius: .5em;
+	 margin: .5em calc(-0.5em - 1px);
+	}
+	[data-algorithm]:not(.heading) > :first-child {
+	 margin-top: 0;
+	}
+	[data-algorithm]:not(.heading) > :last-child {
+	 margin-bottom: 0;
+	}
+
+	/* Style for switch/case <dl>s */
+	dl.switch > dd > ol.only,
+	dl.switch > dd > .only > ol {
+	margin-left: 0;
+	}
+	dl.switch > dd > ol.algorithm,
+	dl.switch > dd > .algorithm > ol {
+	margin-left: -2em;
+	}
+	dl.switch {
+	padding-left: 2em;
+	}
+	dl.switch > dt {
+	text-indent: -1.5em;
+	margin-top: 1em;
+	}
+	dl.switch > dt + dt {
+	margin-top: 0;
+	}
+	dl.switch > dt::before {
+	content: '\21AA';
+	padding: 0 0.5em 0 0;
+	display: inline-block;
+	width: 1em;
+	text-align: right;
+	line-height: 0.5em;
+	}
+
+/** Terminology Markup ********************************************************/
+
+
+/******************************************************************************/
+/*                                 Inline Markup                              */
+/******************************************************************************/
+
+/** Terminology Markup ********************************************************/
+	dfn   { /* Defining instance */
+		font-weight: bolder;
+	}
+	a > i { /* Instance of term */
+		font-style: normal;
+	}
+	dt dfn code, code.idl {
+		font-size: inherit;
+	}
+	dfn var {
+		font-style: normal;
+	}
+
+/** Change Marking ************************************************************/
+
+	del {
+		color: #aa0000;
+		color: var(--del-text);
+		background: transparent;
+		background: var(--del-bg);
+		text-decoration: line-through;
+	}
+	ins {
+		color: #006100;
+		color: var(--ins-text);
+		background: transparent;
+		background: var(--ins-bg);
+		text-decoration: underline;
+	}
+
+	/* for amendments (candidate/proposed changes) */
+
+	.amendment ins, .correction ins, .addition ins,
+	ins[class^=c] {
+		text-decoration-style: dotted;
+	}
+	.amendment del, .correction del, .addition del,
+	del[class^=c] {
+		text-decoration-style: dotted;
+	}
+	.amendment.proposed ins, .correction.proposed ins, .addition.proposed ins,
+	ins[class^=c].proposed {
+		text-decoration-style: double;
+	}
+	.amendment.proposed del, .correction.proposed del, .addition.proposed del,
+	del[class^=c].proposed {
+		text-decoration-style: double;
+	}
+
+/** Miscellaneous improvements to inline formatting ***************************/
+
+	sup {
+		vertical-align: super;
+		font-size: 80%
+	}
+
+/******************************************************************************/
+/*                                    Code                                    */
+/******************************************************************************/
+
+/** General monospace/pre rules ***********************************************/
+
+	pre, code, samp {
+		font-family: Menlo, Consolas, "DejaVu Sans Mono", Monaco, monospace;
+		font-size: .9em;
+		hyphens: none;
+		text-transform: none;
+		text-align: left;
+		text-align: start;
+		font-variant: normal;
+		orphans: 3;
+		widows: 3;
+		page-break-before: avoid;
+	}
+	pre code,
+	code code {
+		font-size: 100%;
+	}
+
+	pre {
+		margin-top: 1em;
+		margin-bottom: 1em;
+		overflow: auto;
+	}
+
+/** Inline Code fragments *****************************************************/
+
+	/* Do something nice. */
+
+/******************************************************************************/
+/*                                    Links                                   */
+/******************************************************************************/
+
+/** General Hyperlinks ********************************************************/
+
+	/* We hyperlink a lot, so make it less intrusive */
+	a[href] {
+		color: #034575;
+		color: var(--a-normal-text);
+		text-decoration: underline #707070;
+		text-decoration: underline var(--a-normal-underline);
+		text-decoration-skip-ink: none;
+	}
+	a:visited {
+		color: #034575;
+		color: var(--a-visited-text);
+		text-decoration-color: #bbb;
+		text-decoration-color: var(--a-visited-underline);
+	}
+
+	/* Indicate interaction with the link */
+	a[href]:focus,
+	a[href]:hover {
+		text-decoration-thickness: 2px;
+	}
+	a[href]:active {
+		color: #c00;
+		color: var(--a-active-text);
+		text-decoration-color: #c00;
+		text-decoration-color: var(--a-active-underline);
+	}
+
+	/* Backout above styling for W3C logo */
+	.head .logo,
+	.head .logo a {
+		border: none;
+		text-decoration: none;
+		background: transparent;
+	}
+
+/******************************************************************************/
+/*                                    Images                                  */
+/******************************************************************************/
+
+	img {
+		border-style: none;
+	}
+
+	img, svg {
+		/* Intentionally not color-scheme aware. */
+		background: white;
+	}
+
+	/* For autogen numbers, add
+	  .caption::before, figcaption::before { content: "Figure " counter(figure) ". "; }
+	*/
+
+	figure, .figure, .sidefigure {
+		page-break-inside: avoid;
+		text-align: center;
+		margin: 2.5em 0;
+	}
+	.figure img,	.sidefigure img,	figure img,
+	.figure object, .sidefigure object, figure object {
+		max-width: 100%;
+		margin: auto;
+		height: auto;
+	}
+	.figure pre, .sidefigure pre, figure pre {
+		text-align: left;
+		display: table;
+		margin: 1em auto;
+	}
+	.figure table, figure table {
+		margin: auto;
+	}
+	@media screen and (min-width: 20em) {
+		.sidefigure {
+			float: right;
+			width: 50%;
+			margin: 0 0 0.5em 0.5em;
+		}
+	}
+	.caption, figcaption, caption {
+		font-style: italic;
+		font-size: 90%;
+	}
+	.caption::before, figcaption::before, figcaption > .marker {
+		font-weight: bold;
+	}
+	.caption, figcaption {
+		counter-increment: figure;
+	}
+
+	/* DL list is indented 2em, but figure inside it is not */
+	dd > .figure, dd > figure { margin-left: -2em; }
+
+/******************************************************************************/
+/*                             Colored Boxes                                  */
+/******************************************************************************/
+
+	.issue, .note, .example, .assertion, .advisement, blockquote,
+	.amendment, .correction, .addition {
+		margin: 1em auto;
+		padding: .5em;
+		border: .5em;
+		border-left-style: solid;
+		page-break-inside: avoid;
+	}
+	span.issue, span.note {
+		padding: .1em .5em .15em;
+		border-right-style: solid;
+	}
+
+	blockquote > :first-child,
+	.note  > p:first-child,
+	.issue > p:first-child,
+	.amendment > p:first-child,
+	.correction > p:first-child,
+	.addition > p:first-child {
+		margin-top: 0;
+	}
+	blockquote > :last-child,
+	.note  > p:last-child,
+	.issue > p:last-child,
+	.amendment > p:last-child,
+	.correction > p:last-child,
+	.addition > p:last-child {
+		margin-bottom: 0;
+	}
+
+
+	.issue::before, .issue > .marker,
+	.example::before, .example > .marker,
+	.note::before, .note > .marker,
+	details.note > summary > .marker,
+	.amendment::before, .amendment > .marker,
+	details.amendment > summary > .marker,
+	.addition::before, .addition > .marker,
+	addition.amendment > summary > .marker,
+	.correction::before, .correction > .marker,
+	correction.amendment > summary > .marker
+	{
+		text-transform: uppercase;
+		padding-right: 1em;
+	}
+
+	.example::before, .example > .marker {
+		display: block;
+		padding-right: 0em;
+	}
+
+/** Blockquotes ***************************************************************/
+
+	blockquote {
+		border-color: silver;
+		border-color: var(--blockquote-border);
+		background: transparent;
+		background: var(--blockquote-bg);
+		color: currentcolor;
+		color: var(--blockquote-text);
+	}
+
+/** Open issue ****************************************************************/
+
+	.issue {
+		border-color: #e05252;
+		border-color: var(--issue-border);
+		background: #fbe9e9;
+		background: var(--issue-bg);
+		color: black;
+		color: var(--issue-text);
+		counter-increment: issue;
+		overflow: auto;
+	}
+	.issue::before, .issue > .marker {
+		color: #831616;
+		color: var(--issueheading-text);
+	}
+	/* Add .issue::before { content: "Issue " counter(issue) " "; } for autogen numbers,
+	  or use class="marker" to mark up the issue number in source. */
+
+/** Example *******************************************************************/
+
+	.example {
+		border-color: #e0cb52;
+		border-color: var(--example-border);
+		background: #fcfaee;
+		background: var(--example-bg);
+		color: black;
+		color: var(--example-text);
+		counter-increment: example;
+		overflow: auto;
+		clear: both;
+	}
+	.example::before, .example > .marker {
+		color: #574b0f;
+		color: var(--exampleheading-text);
+	}
+	/* Add .example::before { content: "Example " counter(example) " "; } for autogen numbers,
+	  or use class="marker" to mark up the example number in source. */
+
+/** Non-normative Note ********************************************************/
+
+	.note {
+		border-color: #52e052;
+		border-color: var(--note-border);
+		background: #e9fbe9;
+		background: var(--note-bg);
+		color: black;
+		color: var(--note-text);
+		overflow: auto;
+	}
+
+	.note::before, .note > .marker,
+	details.note > summary {
+		color: hsl(120, 70%, 30%);
+		color: var(--noteheading-text);
+	}
+	/* Add .note::before { content: "Note "; } for autogen label,
+	  or use class="marker" to mark up the label in source. */
+
+	details.note[open] > summary {
+		border-bottom: 1px silver solid;
+		border-bottom: 1px var(--notesummary-underline) solid;
+	}
+
+/** Assertion Box *************************************************************/
+	/*  for assertions in algorithms */
+
+	.assertion {
+		border-color: #AAA;
+		border-color: var(--assertion-border);
+		background: #EEE;
+		background: var(--assertion-bg);
+		color: black;
+		color: var(--assertion-text);
+	}
+
+/** Advisement Box ************************************************************/
+	/*  for attention-grabbing normative statements */
+
+	.advisement {
+		border-color: orange;
+		border-color: var(--advisement-border);
+		border-style: none solid;
+		background: #fec;
+		background: var(--advisement-bg);
+		color: black;
+		color: var(--advisement-text);
+	}
+	strong.advisement {
+		display: block;
+		text-align: center;
+	}
+	.advisement::before, .advisement > .marker {
+		color: #b35f00;
+		color: var(--advisementheading-text);
+	}
+
+/** Amendment Box *************************************************************/
+
+	.amendment, .correction, .addition {
+		border-color: #330099;
+		border-color: var(--amendment-border);
+		background: #F5F0FF;
+		background: var(--amendment-bg);
+		color: black;
+		color: var(--amendment-text);
+	}
+	.amendment.proposed, .correction.proposed, .addition.proposed {
+		border-style: solid;
+		border-block-width: 0.25em;
+	}
+	.amendment::before, .amendment > .marker,
+	details.amendment > summary::before, details.amendment > summary > .marker,
+	.correction::before, .correction > .marker,
+	details.correction > summary::before, details.correction > summary > .marker,
+	.addition::before, .addition > .marker,
+	details.addition > summary::before, details.addition > summary > .marker {
+		color: #220066;
+		color: var(--amendmentheading-text);
+	}
+	.amendment.proposed::before, .amendment.proposed > .marker,
+	details.amendment.proposed > summary::before, details.amendment.proposed > summary > .marker,
+	.correction.proposed::before, .correction.proposed > .marker,
+	details.correction.proposed > summary::before, details.correction.proposed > summary > .marker,
+	.addition.proposed::before, .addition.proposed > .marker,
+	details.addition.proposed > summary::before, details.addition.proposed > summary > .marker {
+		font-weight: bold;
+	}
+
+/** Spec Obsoletion Notice ****************************************************/
+	/* obnoxious obsoletion notice for older/abandoned specs. */
+
+	details {
+		display: block;
+	}
+	summary {
+		font-weight: bolder;
+	}
+
+	.annoying-warning:not(details),
+	details.annoying-warning:not([open]) > summary,
+	details.annoying-warning[open] {
+		background: hsla(40,100%,50%,0.95);
+		background: var(--warning-bg);
+		color: black;
+		color: var(--warning-text);
+		padding: .75em 1em;
+		border: red;
+		border: var(--warning-border);
+		border-style: solid none;
+		box-shadow: 0 2px 8px black;
+		text-align: center;
+	}
+	.annoying-warning :last-child {
+		margin-bottom: 0;
+	}
+
+@media not print {
+	details.annoying-warning[open] {
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 2em;
+		z-index: 1000;
+	}
+}
+
+	details.annoying-warning:not([open]) > summary {
+		text-align: center;
+	}
+
+/** Entity Definition Boxes ***************************************************/
+
+	.def {
+		padding: .5em 1em;
+		background: #def;
+		background: var(--def-bg);
+		margin: 1.2em 0;
+		border-left: 0.5em solid #8ccbf2;
+		border-left: 0.5em solid var(--def-border);
+		color: black;
+		color: var(--def-text);
+	}
+
+/******************************************************************************/
+/*                                    Tables                                  */
+/******************************************************************************/
+
+	th, td {
+		text-align: left;
+		text-align: start;
+	}
+
+/** Property/Descriptor Definition Tables *************************************/
+
+	table.def {
+		/* inherits .def box styling, see above */
+		width: 100%;
+		border-spacing: 0;
+	}
+
+	table.def td,
+	table.def th {
+		padding: 0.5em;
+		vertical-align: baseline;
+		border-bottom: 1px solid #bbd7e9;
+		border-bottom: 1px solid var(--defrow-border);
+	}
+
+	table.def > tbody > tr:last-child th,
+	table.def > tbody > tr:last-child td {
+		border-bottom: 0;
+	}
+
+	table.def th {
+		font-style: italic;
+		font-weight: normal;
+		padding-left: 1em;
+		width: 3em;
+	}
+
+	/* For when values are extra-complex and need formatting for readability */
+	table td.pre {
+		white-space: pre-wrap;
+	}
+
+	/* A footnote at the bottom of a def table */
+	table.def td.footnote {
+		padding-top: 0.6em;
+	}
+	table.def td.footnote::before {
+		content: " ";
+		display: block;
+		height: 0.6em;
+		width: 4em;
+		border-top: thin solid;
+	}
+
+/** Data tables (and properly marked-up index tables) *************************/
+	/*
+		<table class="data"> highlights structural relationships in a table
+		when correct markup is used (e.g. thead/tbody, th vs. td, scope attribute)
+
+		Use class="complex data" for particularly complicated tables --
+		(This will draw more lines: busier, but clearer.)
+
+		Use class="long" on table cells with paragraph-like contents
+		(This will adjust text alignment accordingly.)
+		Alternately use class="longlastcol" on tables, to have the last column assume "long".
+	*/
+
+	table {
+		word-wrap: normal;
+		overflow-wrap: normal;
+		hyphens: manual;
+	}
+
+	table.data,
+	table.index {
+		margin: 1em auto;
+		border-collapse: collapse;
+		border: hidden;
+		width: 100%;
+	}
+	table.data caption,
+	table.index caption {
+		max-width: 50em;
+		margin: 0 auto 1em;
+	}
+
+	table.data td,  table.data th,
+	table.index td, table.index th {
+		padding: 0.5em 1em;
+		border-width: 1px;
+		border-color: silver;
+		border-color: var(--datacell-border);
+		border-top-style: solid;
+	}
+
+	table.data thead td:empty {
+		padding: 0;
+		border: 0;
+	}
+
+	table.data  thead,
+	table.index thead,
+	table.data  tbody,
+	table.index tbody {
+		border-bottom: 2px solid;
+	}
+
+	table.data colgroup,
+	table.index colgroup {
+		border-left: 2px solid;
+	}
+
+	table.data  tbody th:first-child,
+	table.index tbody th:first-child  {
+		border-right: 2px solid;
+		border-top: 1px solid silver;
+		border-top: 1px solid var(--datacell-border);
+		padding-right: 1em;
+	}
+
+	table.data th[colspan],
+	table.data td[colspan] {
+		text-align: center;
+	}
+
+	table.complex.data th,
+	table.complex.data td {
+		border: 1px solid silver;
+		border: 1px solid var(--datacell-border);
+		text-align: center;
+	}
+
+	table.data.longlastcol td:last-child,
+	table.data td.long {
+		vertical-align: baseline;
+		text-align: left;
+	}
+
+	table.data img {
+		vertical-align: middle;
+	}
+
+
+/*
+Alternate table alignment rules
+
+	table.data,
+	table.index {
+		text-align: center;
+	}
+
+	table.data  thead th[scope="row"],
+	table.index thead th[scope="row"] {
+		text-align: right;
+	}
+
+	table.data  tbody th:first-child,
+	table.index tbody th:first-child  {
+		text-align: right;
+	}
+
+Possible extra rowspan handling
+
+	table.data  tbody th[rowspan]:not([rowspan='1']),
+	table.index tbody th[rowspan]:not([rowspan='1']),
+	table.data  tbody td[rowspan]:not([rowspan='1']),
+	table.index tbody td[rowspan]:not([rowspan='1']) {
+		border-left: 1px solid silver;
+	}
+
+	table.data  tbody th[rowspan]:first-child,
+	table.index tbody th[rowspan]:first-child,
+	table.data  tbody td[rowspan]:first-child,
+	table.index tbody td[rowspan]:first-child{
+		border-left: 0;
+		border-right: 1px solid silver;
+	}
+*/
+
+/******************************************************************************/
+/*                                  Indices                                   */
+/******************************************************************************/
+
+
+/** Table of Contents *********************************************************/
+
+	.toc a {
+		/* More spacing; use padding to make it part of the click target. */
+		padding: 0.1rem 1px 0;
+		/* Larger, more consistently-sized click target */
+		display: block;
+		/* Switch to using border-bottom for underlines */
+		text-decoration: none;
+		border-bottom: 1px solid;
+		/* Reverse color scheme */
+		color: black;
+		color: var(--toclink-text);
+		border-color: #3980b5;
+		border-color: var(--toclink-underline);
+	}
+	.toc a:visited {
+		color: black;
+		color: var(--toclink-visited-text);
+		border-color: #054572;
+		border-color: var(--toclink-visited-underline);
+	}
+	.toc a:focus,
+	.toc a:hover {
+		background: rgba(75%, 75%, 75%, .25);
+		background: var(--a-hover-bg);
+		border-bottom-width: 3px;
+		margin-bottom: -2px;
+	}
+	.toc a:not(:focus):not(:hover) {
+		/* Allow colors to cascade through from link styling */
+		border-bottom-color: transparent;
+	}
+
+	.toc, .toc ol, .toc ul, .toc li {
+		list-style: none; /* Numbers must be inlined into source */
+		/* because generated content isn't search/selectable and markers can't do multilevel yet */
+		margin:  0;
+		padding: 0;
+	}
+	.toc {
+		line-height: 1.1em;
+	}
+
+	/* ToC not indented until third level, but font style & margins show hierarchy */
+	.toc > li			{ font-weight: bold;   }
+	.toc > li li		 { font-weight: normal; }
+	.toc > li li li	  { font-size:   95%;	}
+	.toc > li li li li	{ font-size:   90%;	}
+	.toc > li li li li li { font-size:   85%;	}
+
+	/* @supports not (display:grid) { */
+		.toc > li			{ margin: 1.5rem 0;	}
+		.toc > li li		 { margin: 0.3rem 0;	}
+		.toc > li li li	  { margin-left: 2rem;   }
+
+		/* Section numbers in a column of their own */
+		.toc .secno {
+			float: left;
+			width: 4rem;
+			white-space: nowrap;
+		}
+		.toc > li li li li .secno { font-size: 85%; }
+		.toc > li li li li li .secno { font-size: 100%; }
+
+		.toc li {
+			clear: both;
+		}
+
+		:not(li) > .toc			 { margin-left:  5rem; }
+		.toc .secno				 { margin-left: -5rem; }
+		.toc > li li li .secno	  { margin-left: -7rem; }
+		.toc > li li li li .secno	{ margin-left: -9rem; }
+		.toc > li li li li li .secno { margin-left: -11rem; }
+
+		/* Tighten up indentation in narrow ToCs */
+		@media (max-width: 30em) {
+			:not(li) > .toc			 { margin-left:  4rem; }
+			.toc .secno				 { margin-left: -4rem; }
+			.toc > li li li			 { margin-left:  1rem; }
+			.toc > li li li .secno	  { margin-left: -5rem; }
+			.toc > li li li li .secno	{ margin-left: -6rem; }
+			.toc > li li li li li .secno { margin-left: -7rem; }
+		}
+		/* Loosen it on wide screens */
+		@media screen and (min-width: 78em) {
+			body:not(.toc-inline) :not(li) > .toc			 { margin-left:  4rem; }
+			body:not(.toc-inline) .toc .secno				 { margin-left: -4rem; }
+			body:not(.toc-inline) .toc > li li li			 { margin-left:  1rem; }
+			body:not(.toc-inline) .toc > li li li .secno	  { margin-left: -5rem; }
+			body:not(.toc-inline) .toc > li li li li .secno	{ margin-left: -6rem; }
+			body:not(.toc-inline) .toc > li li li li li .secno { margin-left: -7rem; }
+	}
+	/* } */
+
+	@supports (display:grid) and (display:contents) {
+		/* Use #toc over .toc to override non-@supports rules. */
+		#toc {
+			display: grid;
+			align-content: start;
+			grid-template-columns: auto 1fr;
+			grid-column-gap: 1rem;
+			column-gap: 1rem;
+			grid-row-gap: .6rem;
+			row-gap: .6rem;
+		}
+		#toc h2 {
+			grid-column: 1 / -1;
+			margin-bottom: 0;
+		}
+		#toc ol,
+		#toc li,
+		#toc a {
+			display: contents;
+			/* Switch <a> to subgrid when supported */
+		}
+		#toc span {
+			margin: 0;
+		}
+		#toc > .toc > li > a > span {
+			/* The spans of the top-level list,
+			  comprising the first items of each top-level section. */
+			margin-top: 1.1rem;
+		}
+		#toc#toc .secno { /* Ugh, need more specificity to override base.css */
+			grid-column: 1;
+			width: auto;
+			margin-left: 0;
+		}
+		#toc .content {
+			grid-column: 2;
+			width: auto;
+			margin-right: 1rem;
+			border-bottom: 3px solid transparent;
+			margin-bottom: -3px;
+		}
+		#toc .content:hover,
+		#toc .content:focus {
+			background: rgba(75%, 75%, 75%, .25);
+			background: var(--a-hover-bg);
+			border-bottom-color: #054572;
+			border-bottom-color: var(--toclink-underline);
+		}
+		#toc li li li .content {
+			margin-left: 1rem;
+		}
+		#toc li li li li .content {
+			margin-left: 2rem;
+		}
+	}
+
+
+/** Index *********************************************************************/
+
+	/* Index Lists: Layout */
+	ul.index	  { margin-left: 0; columns: 15em; text-indent: 1em hanging; }
+	ul.index li	{ margin-left: 0; list-style: none; break-inside: avoid; }
+	ul.index li li { margin-left: 1em; }
+	ul.index dl	{ margin-top: 0; }
+	ul.index dt	{ margin: .2em 0 .2em 20px;}
+	ul.index dd	{ margin: .2em 0 .2em 40px;}
+	/* Index Lists: Typography */
+	ul.index ul,
+	ul.index dl { font-size: smaller; }
+	@media not print {
+		ul.index li a + span {
+			white-space: nowrap;
+			color: transparent; }
+		ul.index li a:hover + span,
+		ul.index li a:focus + span {
+			color: #707070;
+			color: var(--indexinfo-text);
+		}
+	}
+
+/** Index Tables *****************************************************/
+	/* See also the data table styling section, which this effectively subclasses */
+
+	table.index {
+		font-size: small;
+		border-collapse: collapse;
+		border-spacing: 0;
+		text-align: left;
+		margin: 1em 0;
+	}
+
+	table.index td,
+	table.index th {
+		padding: 0.4em;
+	}
+
+	table.index tr:hover td:not([rowspan]),
+	table.index tr:hover th:not([rowspan]) {
+		color: black;
+		color: var(--indextable-hover-text);
+		background: #f7f8f9;
+		background: var(--indextable-hover-bg);
+	}
+
+	/* The link in the first column in the property table (formerly a TD) */
+	table.index th:first-child a {
+		font-weight: bold;
+	}
+
+/** Outdated warning **********************************************************/
+
+.outdated-spec {
+	color: black;
+	color: var(--outdatedspec-text);
+	background-color: rgba(0,0,0,0.5);
+	background-color: var(--outdatedspec-bg);
+}
+
+.outdated-warning {
+	position: fixed;
+	bottom: 50%;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+	width: 50%;
+	background: maroon;
+	background: var(--outdated-bg);
+	color: white;
+	color: var(--outdated-text);
+	border-radius: 1em;
+	box-shadow: 0 0 1em red;
+	box-shadow: 0 0 1em var(--outdated-shadow);
+	padding: 2em;
+	text-align: center;
+	z-index: 2;
+}
+
+.outdated-warning a {
+	color: currentcolor;
+	background: transparent;
+}
+
+.edited-rec-warning {
+	background: darkorange;
+	background: var(--editedrec-bg);
+	box-shadow: 0 0 1em;
+}
+
+.outdated-warning button {
+	color: var(--outdated-text);
+	border-radius: 1em;
+	box-shadow: 0 0 1em red;
+	box-shadow: 0 0 1em var(--outdated-shadow);
+	padding: 2em;
+	text-align: center;
+	z-index: 2;
+}
+
+.outdated-warning a {
+	color: currentcolor;
+	background: transparent;
+}
+
+.edited-rec-warning {
+	background: darkorange;
+	background: var(--editedrec-bg);
+	box-shadow: 0 0 1em;
+}
+
+.outdated-warning button {
+	position: absolute;
+	top: 0;
+	right:0;
+	margin: 0;
+	border: 0;
+	padding: 0.25em 0.5em;
+	background: transparent;
+	color: white;
+	color: var(--outdated-text);
+	font:1em sans-serif;
+	text-align:center;
+}
+
+.outdated-warning span {
+	display: block;
+}
+
+.outdated-collapsed {
+	bottom: 0;
+	border-radius: 0;
+	width: 100%;
+	padding: 0;
+}
+
+/******************************************************************************/
+/*                                    Print                                   */
+/******************************************************************************/
+
+	@media print {
+		/* Pages have their own margins. */
+		html {
+			margin: 0;
+		}
+		/* Serif for print. */
+		body {
+			font-family: serif;
+		}
+
+		.outdated-warning {
+			position: absolute;
+			border-style: solid;
+			border-color: red;
+		}
+
+		.outdated-warning input {
+			display: none;
+		}
+	}
+	@page {
+		margin: 1.5cm 1.1cm;
+	}
+
+
+
+/******************************************************************************/
+/*                             Overflow Control                               */
+/******************************************************************************/
+
+	.figure .caption, .sidefigure .caption, figcaption {
+		/* in case figure is overlarge, limit caption to 50em */
+		max-width: 50rem;
+		margin-left: auto;
+		margin-right: auto;
+	}
+	.overlarge {
+		/* Magic to create good item positioning:
+		  "content column" is 50ems wide at max; less on smaller screens.
+		  Extra space (after ToC + content) is empty on the right.
+
+		  1. When item < content column, centers item in column.
+		  2. When content < item < available, left-aligns.
+		  3. When item > available, fills available + scroll bar.
+		*/
+		display: grid;
+		grid-template-columns: minmax(0, 50em);
+	}
+	.overlarge > table {
+		/* limit preferred width of table */
+		max-width: 50em;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	@media (min-width: 55em) {
+		.overlarge {
+			margin-right: calc(13px + 26.5rem - 50vw);
+			max-width: none;
+		}
+	}
+	@media screen and (min-width: 78em) {
+		body:not(.toc-inline) .overlarge {
+			/* 30.5em body padding 50em content area */
+			margin-right: calc(40em - 50vw) !important;
+		}
+	}
+	@media screen and (min-width: 90em) {
+		body:not(.toc-inline) .overlarge {
+			/* 4em html margin 30.5em body padding 50em content area */
+			margin-right: calc(84.5em - 100vw) !important;
+		}
+	}
+
+	@media not print {
+		.overlarge {
+			overflow-x: auto;
+			/* See Lea Verou's explanation background-attachment:
+			* http://lea.verou.me/2012/04/background-attachment-local/
+			*
+			background: top left  / 4em 100% linear-gradient(to right,  #ffffff, rgba(255, 255, 255, 0)) local,
+						top right / 4em 100% linear-gradient(to left, #ffffff, rgba(255, 255, 255, 0)) local,
+						top left  / 1em 100% linear-gradient(to right,  #c3c3c5, rgba(195, 195, 197, 0)) scroll,
+						top right / 1em 100% linear-gradient(to left, #c3c3c5, rgba(195, 195, 197, 0)) scroll,
+						white;
+			background-repeat: no-repeat;
+			*/
+		}
+	}
+</style>
+<style>
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      vertical-align: top;
+    }
+    th, td {
+      border-left: none;
+      border-right: none;
+      padding: 0px 10px;
+    }
+    th {
+      text-align: center;
+    }
+
+    del { background: #fcc; color: #000; text-decoration: line-through; }
+    ins { background: #cfc; color: #000; }
+    blockquote .highlight:not(.idl) { background: initial; margin: initial; padding: 0.5em }
+    blockquote ul { background: inherit; }
+    blockquote code.highlight:not(.idl) { padding: initial; }
+    blockquote c-[a] { color: inherit; } /* Keyword.Declaration */
+    blockquote c-[b] { color: inherit; } /* Keyword.Type */
+    blockquote c-[c] { color: inherit; } /* Comment */
+    blockquote c-[d] { color: inherit; } /* Comment.Multiline */
+    blockquote c-[e] { color: inherit; } /* Name.Attribute */
+    blockquote c-[f] { color: inherit; } /* Name.Tag */
+    blockquote c-[g] { color: inherit; } /* Name.Variable */
+    blockquote c-[k] { color: inherit; } /* Keyword */
+    blockquote c-[l] { color: inherit; } /* Literal */
+    blockquote c-[m] { color: inherit; } /* Literal.Number */
+    blockquote c-[n] { color: inherit; } /* Name */
+    blockquote c-[o] { color: inherit; } /* Operator */
+    blockquote c-[p] { color: inherit; } /* Punctuation */
+    blockquote c-[s] { color: inherit; } /* Literal.String */
+    blockquote c-[t] { color: inherit; } /* Literal.String.Single */
+    blockquote c-[u] { color: inherit; } /* Literal.String.Double */
+    blockquote c-[cp] { color: inherit; } /* Comment.Preproc */
+    blockquote c-[c1] { color: inherit; } /* Comment.Single */
+    blockquote c-[cs] { color: inherit; } /* Comment.Special */
+    blockquote c-[kc] { color: inherit; } /* Keyword.Constant */
+    blockquote c-[kn] { color: inherit; } /* Keyword.Namespace */
+    blockquote c-[kp] { color: inherit; } /* Keyword.Pseudo */
+    blockquote c-[kr] { color: inherit; } /* Keyword.Reserved */
+    blockquote c-[ld] { color: inherit; } /* Literal.Date */
+    blockquote c-[nc] { color: inherit; } /* Name.Class */
+    blockquote c-[no] { color: inherit; } /* Name.Constant */
+    blockquote c-[nd] { color: inherit; } /* Name.Decorator */
+    blockquote c-[ni] { color: inherit; } /* Name.Entity */
+    blockquote c-[ne] { color: inherit; } /* Name.Exception */
+    blockquote c-[nf] { color: inherit; } /* Name.Function */
+    blockquote c-[nl] { color: inherit; } /* Name.Label */
+    blockquote c-[nn] { color: inherit; } /* Name.Namespace */
+    blockquote c-[py] { color: inherit; } /* Name.Property */
+    blockquote c-[ow] { color: inherit; } /* Operator.Word */
+    blockquote c-[mb] { color: inherit; } /* Literal.Number.Bin */
+    blockquote c-[mf] { color: inherit; } /* Literal.Number.Float */
+    blockquote c-[mh] { color: inherit; } /* Literal.Number.Hex */
+    blockquote c-[mi] { color: inherit; } /* Literal.Number.Integer */
+    blockquote c-[mo] { color: inherit; } /* Literal.Number.Oct */
+    blockquote c-[sb] { color: inherit; } /* Literal.String.Backtick */
+    blockquote c-[sc] { color: inherit; } /* Literal.String.Char */
+    blockquote c-[sd] { color: inherit; } /* Literal.String.Doc */
+    blockquote c-[se] { color: inherit; } /* Literal.String.Escape */
+    blockquote c-[sh] { color: inherit; } /* Literal.String.Heredoc */
+    blockquote c-[si] { color: inherit; } /* Literal.String.Interpol */
+    blockquote c-[sx] { color: inherit; } /* Literal.String.Other */
+    blockquote c-[sr] { color: inherit; } /* Literal.String.Regex */
+    blockquote c-[ss] { color: inherit; } /* Literal.String.Symbol */
+    blockquote c-[vc] { color: inherit; } /* Name.Variable.Class */
+    blockquote c-[vg] { color: inherit; } /* Name.Variable.Global */
+    blockquote c-[vi] { color: inherit; } /* Name.Variable.Instance */
+    blockquote c-[il] { color: inherit; } /* Literal.Number.Integer.Long */
+  </style>
+  <meta content="Bikeshed version d765c696b, updated Fri Mar 8 15:58:52 2024 -0800" name="generator">
+  <link href="https://vector-of-bool.github.io/psl.html" rel="canonical">
+  <link href="https://isocpp.org/favicon.ico" rel="icon">
+  <meta content="dark light" name="color-scheme">
+<style>/* Boilerplate: style-autolinks */
+.css.css, .property.property, .descriptor.descriptor {
+    color: var(--a-normal-text);
+    font-size: inherit;
+    font-family: inherit;
+}
+.css::before, .property::before, .descriptor::before {
+    content: "‘";
+}
+.css::after, .property::after, .descriptor::after {
+    content: "’";
+}
+.property, .descriptor {
+    /* Don't wrap property and descriptor names */
+    white-space: nowrap;
+}
+.type { /* CSS value <type> */
+    font-style: italic;
+}
+pre .property::before, pre .property::after {
+    content: "";
+}
+[data-link-type="property"]::before,
+[data-link-type="propdesc"]::before,
+[data-link-type="descriptor"]::before,
+[data-link-type="value"]::before,
+[data-link-type="function"]::before,
+[data-link-type="at-rule"]::before,
+[data-link-type="selector"]::before,
+[data-link-type="maybe"]::before {
+    content: "‘";
+}
+[data-link-type="property"]::after,
+[data-link-type="propdesc"]::after,
+[data-link-type="descriptor"]::after,
+[data-link-type="value"]::after,
+[data-link-type="function"]::after,
+[data-link-type="at-rule"]::after,
+[data-link-type="selector"]::after,
+[data-link-type="maybe"]::after {
+    content: "’";
+}
+
+[data-link-type].production::before,
+[data-link-type].production::after,
+.prod [data-link-type]::before,
+.prod [data-link-type]::after {
+    content: "";
+}
+
+[data-link-type=element],
+[data-link-type=element-attr] {
+    font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace;
+    font-size: .9em;
+}
+[data-link-type=element]::before { content: "<" }
+[data-link-type=element]::after  { content: ">" }
+
+[data-link-type=biblio] {
+    white-space: pre;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --selflink-text: black;
+        --selflink-bg: silver;
+        --selflink-hover-text: white;
+    }
+}
+</style>
+<style>/* Boilerplate: style-colors */
+/* Any --*-text not paired with a --*-bg is assumed to have a transparent bg */
+:root {
+    color-scheme: light dark;
+
+    --text: black;
+    --bg: white;
+
+    --unofficial-watermark: url(https://www.w3.org/StyleSheets/TR/2016/logos/UD-watermark);
+
+    --logo-bg: #1a5e9a;
+    --logo-active-bg: #c00;
+    --logo-text: white;
+
+    --tocnav-normal-text: #707070;
+    --tocnav-normal-bg: var(--bg);
+    --tocnav-hover-text: var(--tocnav-normal-text);
+    --tocnav-hover-bg: #f8f8f8;
+    --tocnav-active-text: #c00;
+    --tocnav-active-bg: var(--tocnav-normal-bg);
+
+    --tocsidebar-text: var(--text);
+    --tocsidebar-bg: #f7f8f9;
+    --tocsidebar-shadow: rgba(0,0,0,.1);
+    --tocsidebar-heading-text: hsla(203,20%,40%,.7);
+
+    --toclink-text: var(--text);
+    --toclink-underline: #3980b5;
+    --toclink-visited-text: var(--toclink-text);
+    --toclink-visited-underline: #054572;
+
+    --heading-text: #005a9c;
+
+    --hr-text: var(--text);
+
+    --algo-border: #def;
+
+    --del-text: red;
+    --del-bg: transparent;
+    --ins-text: #080;
+    --ins-bg: transparent;
+
+    --a-normal-text: #034575;
+    --a-normal-underline: #bbb;
+    --a-visited-text: var(--a-normal-text);
+    --a-visited-underline: #707070;
+    --a-hover-bg: rgba(75%, 75%, 75%, .25);
+    --a-active-text: #c00;
+    --a-active-underline: #c00;
+
+    --blockquote-border: silver;
+    --blockquote-bg: transparent;
+    --blockquote-text: currentcolor;
+
+    --issue-border: #e05252;
+    --issue-bg: #fbe9e9;
+    --issue-text: var(--text);
+    --issueheading-text: #831616;
+
+    --example-border: #e0cb52;
+    --example-bg: #fcfaee;
+    --example-text: var(--text);
+    --exampleheading-text: #574b0f;
+
+    --note-border: #52e052;
+    --note-bg: #e9fbe9;
+    --note-text: var(--text);
+    --noteheading-text: hsl(120, 70%, 30%);
+    --notesummary-underline: silver;
+
+    --assertion-border: #aaa;
+    --assertion-bg: #eee;
+    --assertion-text: black;
+
+    --advisement-border: orange;
+    --advisement-bg: #fec;
+    --advisement-text: var(--text);
+    --advisementheading-text: #b35f00;
+
+    --warning-border: red;
+    --warning-bg: hsla(40,100%,50%,0.95);
+    --warning-text: var(--text);
+
+    --amendment-border: #330099;
+    --amendment-bg: #F5F0FF;
+    --amendment-text: var(--text);
+    --amendmentheading-text: #220066;
+
+    --def-border: #8ccbf2;
+    --def-bg: #def;
+    --def-text: var(--text);
+    --defrow-border: #bbd7e9;
+
+    --datacell-border: silver;
+
+    --indexinfo-text: #707070;
+
+    --indextable-hover-text: black;
+    --indextable-hover-bg: #f7f8f9;
+
+    --outdatedspec-bg: rgba(0, 0, 0, .5);
+    --outdatedspec-text: black;
+    --outdated-bg: maroon;
+    --outdated-text: white;
+    --outdated-shadow: red;
+
+    --editedrec-bg: darkorange;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --text: #ddd;
+        --bg: black;
+
+        --unofficial-watermark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cg fill='%23100808' transform='translate(200 200) rotate(-45) translate(-200 -200)' stroke='%23100808' stroke-width='3'%3E%3Ctext x='50%25' y='220' style='font: bold 70px sans-serif; text-anchor: middle; letter-spacing: 6px;'%3EUNOFFICIAL%3C/text%3E%3Ctext x='50%25' y='305' style='font: bold 70px sans-serif; text-anchor: middle; letter-spacing: 6px;'%3EDRAFT%3C/text%3E%3C/g%3E%3C/svg%3E");
+
+        --logo-bg: #1a5e9a;
+        --logo-active-bg: #c00;
+        --logo-text: white;
+
+        --tocnav-normal-text: #999;
+        --tocnav-normal-bg: var(--bg);
+        --tocnav-hover-text: var(--tocnav-normal-text);
+        --tocnav-hover-bg: #080808;
+        --tocnav-active-text: #f44;
+        --tocnav-active-bg: var(--tocnav-normal-bg);
+
+        --tocsidebar-text: var(--text);
+        --tocsidebar-bg: #080808;
+        --tocsidebar-shadow: rgba(255,255,255,.1);
+        --tocsidebar-heading-text: hsla(203,20%,40%,.7);
+
+        --toclink-text: var(--text);
+        --toclink-underline: #6af;
+        --toclink-visited-text: var(--toclink-text);
+        --toclink-visited-underline: #054572;
+
+        --heading-text: #8af;
+
+        --hr-text: var(--text);
+
+        --algo-border: #456;
+
+        --del-text: #f44;
+        --del-bg: transparent;
+        --ins-text: #4a4;
+        --ins-bg: transparent;
+
+        --a-normal-text: #6af;
+        --a-normal-underline: #555;
+        --a-visited-text: var(--a-normal-text);
+        --a-visited-underline: var(--a-normal-underline);
+        --a-hover-bg: rgba(25%, 25%, 25%, .2);
+        --a-active-text: #f44;
+        --a-active-underline: var(--a-active-text);
+
+        --borderedblock-bg: rgba(255, 255, 255, .05);
+
+        --blockquote-border: silver;
+        --blockquote-bg: var(--borderedblock-bg);
+        --blockquote-text: currentcolor;
+
+        --issue-border: #e05252;
+        --issue-bg: var(--borderedblock-bg);
+        --issue-text: var(--text);
+        --issueheading-text: hsl(0deg, 70%, 70%);
+
+        --example-border: hsl(50deg, 90%, 60%);
+        --example-bg: var(--borderedblock-bg);
+        --example-text: var(--text);
+        --exampleheading-text: hsl(50deg, 70%, 70%);
+
+        --note-border: hsl(120deg, 100%, 35%);
+        --note-bg: var(--borderedblock-bg);
+        --note-text: var(--text);
+        --noteheading-text: hsl(120, 70%, 70%);
+        --notesummary-underline: silver;
+
+        --assertion-border: #444;
+        --assertion-bg: var(--borderedblock-bg);
+        --assertion-text: var(--text);
+
+        --advisement-border: orange;
+        --advisement-bg: #222218;
+        --advisement-text: var(--text);
+        --advisementheading-text: #f84;
+
+        --warning-border: red;
+        --warning-bg: hsla(40,100%,20%,0.95);
+        --warning-text: var(--text);
+
+        --amendment-border: #330099;
+        --amendment-bg: #080010;
+        --amendment-text: var(--text);
+        --amendmentheading-text: #cc00ff;
+
+        --def-border: #8ccbf2;
+        --def-bg: #080818;
+        --def-text: var(--text);
+        --defrow-border: #136;
+
+        --datacell-border: silver;
+
+        --indexinfo-text: #aaa;
+
+        --indextable-hover-text: var(--text);
+        --indextable-hover-bg: #181818;
+
+        --outdatedspec-bg: rgba(255, 255, 255, .5);
+        --outdatedspec-text: black;
+        --outdated-bg: maroon;
+        --outdated-text: white;
+        --outdated-shadow: red;
+
+        --editedrec-bg: darkorange;
+    }
+    /* In case a transparent-bg image doesn't expect to be on a dark bg,
+       which is quite common in practice... */
+    img { background: white; }
+}
+</style>
+<style>/* Boilerplate: style-counters */
+body {
+    counter-reset: example figure issue;
+}
+.issue {
+    counter-increment: issue;
+}
+.issue:not(.no-marker)::before {
+    content: "Issue " counter(issue);
+}
+
+.example {
+    counter-increment: example;
+}
+.example:not(.no-marker)::before {
+    content: "Example " counter(example);
+}
+.invalid.example:not(.no-marker)::before,
+.illegal.example:not(.no-marker)::before {
+    content: "Invalid Example" counter(example);
+}
+
+figcaption {
+    counter-increment: figure;
+}
+figcaption:not(.no-marker)::before {
+    content: "Figure " counter(figure) " ";
+}
+</style>
+<style>/* Boilerplate: style-issues */
+a[href].issue-return {
+    float: right;
+    float: inline-end;
+    color: var(--issueheading-text);
+    font-weight: bold;
+    text-decoration: none;
+}
+</style>
+<style>/* Boilerplate: style-md-lists */
+/* This is a weird hack for me not yet following the commonmark spec
+   regarding paragraph and lists. */
+[data-md] > :first-child {
+    margin-top: 0;
+}
+[data-md] > :last-child {
+    margin-bottom: 0;
+}
+</style>
+<style>/* Boilerplate: style-selflinks */
+:root {
+    --selflink-text: white;
+    --selflink-bg: gray;
+    --selflink-hover-text: black;
+}
+.heading, .issue, .note, .example, li, dt {
+    position: relative;
+}
+a.self-link {
+    position: absolute;
+    top: 0;
+    left: calc(-1 * (3.5rem - 26px));
+    width: calc(3.5rem - 26px);
+    height: 2em;
+    text-align: center;
+    border: none;
+    transition: opacity .2s;
+    opacity: .5;
+}
+a.self-link:hover {
+    opacity: 1;
+}
+.heading > a.self-link {
+    font-size: 83%;
+}
+.example > a.self-link,
+.note > a.self-link,
+.issue > a.self-link {
+    /* These blocks are overflow:auto, so positioning outside
+       doesn't work. */
+    left: auto;
+    right: 0;
+}
+li > a.self-link {
+    left: calc(-1 * (3.5rem - 26px) - 2em);
+}
+dfn > a.self-link {
+    top: auto;
+    left: auto;
+    opacity: 0;
+    width: 1.5em;
+    height: 1.5em;
+    background: var(--selflink-bg);
+    color: var(--selflink-text);
+    font-style: normal;
+    transition: opacity .2s, background-color .2s, color .2s;
+}
+dfn:hover > a.self-link {
+    opacity: 1;
+}
+dfn > a.self-link:hover {
+    color: var(--selflink-hover-text);
+}
+
+a.self-link::before            { content: "¶"; }
+.heading > a.self-link::before { content: "§"; }
+dfn > a.self-link::before      { content: "#"; }
+</style>
+<style>/* Boilerplate: style-syntax-highlighting */
+code.highlight { padding: .1em; border-radius: .3em; }
+pre.highlight, pre > code.highlight { display: block; padding: 1em; margin: .5em 0; overflow: auto; border-radius: 0; }
+
+.highlight:not(.idl) { background: rgba(0, 0, 0, .03); }
+c-[a] { color: #990055 } /* Keyword.Declaration */
+c-[b] { color: #990055 } /* Keyword.Type */
+c-[c] { color: #708090 } /* Comment */
+c-[d] { color: #708090 } /* Comment.Multiline */
+c-[e] { color: #0077aa } /* Name.Attribute */
+c-[f] { color: #669900 } /* Name.Tag */
+c-[g] { color: #222222 } /* Name.Variable */
+c-[k] { color: #990055 } /* Keyword */
+c-[l] { color: #000000 } /* Literal */
+c-[m] { color: #000000 } /* Literal.Number */
+c-[n] { color: #0077aa } /* Name */
+c-[o] { color: #999999 } /* Operator */
+c-[p] { color: #999999 } /* Punctuation */
+c-[s] { color: #a67f59 } /* Literal.String */
+c-[t] { color: #a67f59 } /* Literal.String.Single */
+c-[u] { color: #a67f59 } /* Literal.String.Double */
+c-[cp] { color: #708090 } /* Comment.Preproc */
+c-[c1] { color: #708090 } /* Comment.Single */
+c-[cs] { color: #708090 } /* Comment.Special */
+c-[kc] { color: #990055 } /* Keyword.Constant */
+c-[kn] { color: #990055 } /* Keyword.Namespace */
+c-[kp] { color: #990055 } /* Keyword.Pseudo */
+c-[kr] { color: #990055 } /* Keyword.Reserved */
+c-[ld] { color: #000000 } /* Literal.Date */
+c-[nc] { color: #0077aa } /* Name.Class */
+c-[no] { color: #0077aa } /* Name.Constant */
+c-[nd] { color: #0077aa } /* Name.Decorator */
+c-[ni] { color: #0077aa } /* Name.Entity */
+c-[ne] { color: #0077aa } /* Name.Exception */
+c-[nf] { color: #0077aa } /* Name.Function */
+c-[nl] { color: #0077aa } /* Name.Label */
+c-[nn] { color: #0077aa } /* Name.Namespace */
+c-[py] { color: #0077aa } /* Name.Property */
+c-[ow] { color: #999999 } /* Operator.Word */
+c-[mb] { color: #000000 } /* Literal.Number.Bin */
+c-[mf] { color: #000000 } /* Literal.Number.Float */
+c-[mh] { color: #000000 } /* Literal.Number.Hex */
+c-[mi] { color: #000000 } /* Literal.Number.Integer */
+c-[mo] { color: #000000 } /* Literal.Number.Oct */
+c-[sb] { color: #a67f59 } /* Literal.String.Backtick */
+c-[sc] { color: #a67f59 } /* Literal.String.Char */
+c-[sd] { color: #a67f59 } /* Literal.String.Doc */
+c-[se] { color: #a67f59 } /* Literal.String.Escape */
+c-[sh] { color: #a67f59 } /* Literal.String.Heredoc */
+c-[si] { color: #a67f59 } /* Literal.String.Interpol */
+c-[sx] { color: #a67f59 } /* Literal.String.Other */
+c-[sr] { color: #a67f59 } /* Literal.String.Regex */
+c-[ss] { color: #a67f59 } /* Literal.String.Symbol */
+c-[vc] { color: #0077aa } /* Name.Variable.Class */
+c-[vg] { color: #0077aa } /* Name.Variable.Global */
+c-[vi] { color: #0077aa } /* Name.Variable.Instance */
+c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
+
+@media (prefers-color-scheme: dark) {
+    .highlight:not(.idl) { background: rgba(255, 255, 255, .05); }
+
+    c-[a] { color: #d33682 } /* Keyword.Declaration */
+    c-[b] { color: #d33682 } /* Keyword.Type */
+    c-[c] { color: #2aa198 } /* Comment */
+    c-[d] { color: #2aa198 } /* Comment.Multiline */
+    c-[e] { color: #268bd2 } /* Name.Attribute */
+    c-[f] { color: #b58900 } /* Name.Tag */
+    c-[g] { color: #cb4b16 } /* Name.Variable */
+    c-[k] { color: #d33682 } /* Keyword */
+    c-[l] { color: #657b83 } /* Literal */
+    c-[m] { color: #657b83 } /* Literal.Number */
+    c-[n] { color: #268bd2 } /* Name */
+    c-[o] { color: #657b83 } /* Operator */
+    c-[p] { color: #657b83 } /* Punctuation */
+    c-[s] { color: #6c71c4 } /* Literal.String */
+    c-[t] { color: #6c71c4 } /* Literal.String.Single */
+    c-[u] { color: #6c71c4 } /* Literal.String.Double */
+    c-[ch] { color: #2aa198 } /* Comment.Hashbang */
+    c-[cp] { color: #2aa198 } /* Comment.Preproc */
+    c-[cpf] { color: #2aa198 } /* Comment.PreprocFile */
+    c-[c1] { color: #2aa198 } /* Comment.Single */
+    c-[cs] { color: #2aa198 } /* Comment.Special */
+    c-[kc] { color: #d33682 } /* Keyword.Constant */
+    c-[kn] { color: #d33682 } /* Keyword.Namespace */
+    c-[kp] { color: #d33682 } /* Keyword.Pseudo */
+    c-[kr] { color: #d33682 } /* Keyword.Reserved */
+    c-[ld] { color: #657b83 } /* Literal.Date */
+    c-[nc] { color: #268bd2 } /* Name.Class */
+    c-[no] { color: #268bd2 } /* Name.Constant */
+    c-[nd] { color: #268bd2 } /* Name.Decorator */
+    c-[ni] { color: #268bd2 } /* Name.Entity */
+    c-[ne] { color: #268bd2 } /* Name.Exception */
+    c-[nf] { color: #268bd2 } /* Name.Function */
+    c-[nl] { color: #268bd2 } /* Name.Label */
+    c-[nn] { color: #268bd2 } /* Name.Namespace */
+    c-[py] { color: #268bd2 } /* Name.Property */
+    c-[ow] { color: #657b83 } /* Operator.Word */
+    c-[mb] { color: #657b83 } /* Literal.Number.Bin */
+    c-[mf] { color: #657b83 } /* Literal.Number.Float */
+    c-[mh] { color: #657b83 } /* Literal.Number.Hex */
+    c-[mi] { color: #657b83 } /* Literal.Number.Integer */
+    c-[mo] { color: #657b83 } /* Literal.Number.Oct */
+    c-[sa] { color: #6c71c4 } /* Literal.String.Affix */
+    c-[sb] { color: #6c71c4 } /* Literal.String.Backtick */
+    c-[sc] { color: #6c71c4 } /* Literal.String.Char */
+    c-[dl] { color: #6c71c4 } /* Literal.String.Delimiter */
+    c-[sd] { color: #6c71c4 } /* Literal.String.Doc */
+    c-[se] { color: #6c71c4 } /* Literal.String.Escape */
+    c-[sh] { color: #6c71c4 } /* Literal.String.Heredoc */
+    c-[si] { color: #6c71c4 } /* Literal.String.Interpol */
+    c-[sx] { color: #6c71c4 } /* Literal.String.Other */
+    c-[sr] { color: #6c71c4 } /* Literal.String.Regex */
+    c-[ss] { color: #6c71c4 } /* Literal.String.Symbol */
+    c-[fm] { color: #268bd2 } /* Name.Function.Magic */
+    c-[vc] { color: #cb4b16 } /* Name.Variable.Class */
+    c-[vg] { color: #cb4b16 } /* Name.Variable.Global */
+    c-[vi] { color: #cb4b16 } /* Name.Variable.Instance */
+    c-[vm] { color: #cb4b16 } /* Name.Variable.Magic */
+    c-[il] { color: #657b83 } /* Literal.Number.Integer.Long */
+}
+</style>
+ <body class="h-entry">
+  <div class="head">
+   <p data-fill-with="logo"></p>
+   <h1 class="p-name no-ref" id="title">cxx-pflR1<br>The Pitchfork Layout (PFL)</h1>
+   <h2 class="no-num no-toc no-ref heading settled" id="profile-and-date"><span class="content">A Collection of Interesting Ideas, <time class="dt-updated" datetime="2024-03-28">2024-03-28</time></span></h2>
+   <div data-fill-with="spec-metadata">
+    <dl>
+     <dt>This version:
+     <dd><a class="u-url" href="https://vector-of-bool.github.io/psl.html">https://vector-of-bool.github.io/psl.html</a>
+     <dt class="editor">Author:
+     <dd class="editor p-author h-card vcard"><a class="p-name fn u-url url" href="https://vector-of-bool.github.io/">Colby Pike</a> <a class="u-email email" href="mailto:vectorofbool@gmail.com">vectorofbool@gmail.com</a>
+     <dt>Project:
+     <dd>ISO/IEC 14882 Programming Languages — C++, ISO/IEC JTC1/SC22/WG21
+    </dl>
+   </div>
+   <div data-fill-with="warning"></div>
+   <hr title="Separator for header">
+  </div>
+  <div class="p-summary" data-fill-with="abstract">
+   <h2 class="no-num no-toc no-ref heading settled" id="abstract"><span class="content">Abstract</span></h2>
+   <p>PFL a convention for laying out source, build, and resource files in a
+filesystem to aide in uniformity, tooling, understandability, and
+compartmentalization.</p>
+  </div>
+  <nav data-fill-with="table-of-contents" id="toc">
+   <h2 class="no-num no-toc no-ref" id="contents">Table of Contents</h2>
+   <ol class="toc" role="directory">
+    <li>
+     <a href="#intro"><span class="secno">1</span> <span class="content">Introduction</span></a>
+     <ol class="toc">
+      <li>
+       <a href="#intro.bg"><span class="secno">1.1</span> <span class="content">Background and Terminology</span></a>
+       <ol class="toc">
+        <li><a href="#intro.bg.phy_log"><span class="secno">1.1.1</span> <span class="content">Physical vs. Logical Layout</span></a>
+        <li><a href="#intro.bg.component"><span class="secno">1.1.2</span> <span class="content">The <em>Physical Component</em></span></a>
+        <li><a href="#intro.bg.coherence"><span class="secno">1.1.3</span> <span class="content">Logical/Physical Coherence</span></a>
+        <li><a href="#into.bg.pkg"><span class="secno">1.1.4</span> <span class="content">Packages, Projects, Modules, and Submodules</span></a>
+       </ol>
+      <li><a href="#intro.files"><span class="secno">1.2</span> <span class="content">Project Files</span></a>
+      <li><a href="#intro.dirs"><span class="secno">1.3</span> <span class="content">Project Directories</span></a>
+     </ol>
+    <li>
+     <a href="#tld"><span class="secno">2</span> <span class="content">Top-Level Directories</span></a>
+     <ol class="toc">
+      <li><a href="#tld.build"><span class="secno">2.1</span> <span class="content"><code class="highlight"><c- n>build</c-><c- o>/</c-></code></span></a>
+      <li><a href="#tld.include"><span class="secno">2.2</span> <span class="content"><code class="highlight"><c- n>include</c-><c- o>/</c-></code></span></a>
+      <li><a href="#tld.src"><span class="secno">2.3</span> <span class="content"><code class="highlight"><c- n>src</c-><c- o>/</c-></code></span></a>
+      <li><a href="#tld.tests"><span class="secno">2.4</span> <span class="content"><code class="highlight"><c- n>tests</c-><c- o>/</c-></code></span></a>
+      <li><a href="#tld.examples"><span class="secno">2.5</span> <span class="content"><code class="highlight"><c- n>examples</c-><c- o>/</c-></code></span></a>
+      <li><a href="#tld.external"><span class="secno">2.6</span> <span class="content"><code class="highlight"><c- n>external</c-><c- o>/</c-></code></span></a>
+      <li><a href="#tld.data"><span class="secno">2.7</span> <span class="content"><code class="highlight"><c- n>data</c-><c- o>/</c-></code></span></a>
+      <li><a href="#tld.tools"><span class="secno">2.8</span> <span class="content"><code class="highlight"><c- n>tools</c-><c- o>/</c-></code></span></a>
+      <li><a href="#tld.docs"><span class="secno">2.9</span> <span class="content"><code class="highlight"><c- n>docs</c-><c- o>/</c-></code></span></a>
+      <li><a href="#tld.libs"><span class="secno">2.10</span> <span class="content"><code class="highlight"><c- n>libs</c-><c- o>/</c-></code></span></a>
+      <li><a href="#tld.extras"><span class="secno">2.11</span> <span class="content"><code class="highlight"><c- n>extras</c-><c- o>/</c-></code></span></a>
+     </ol>
+    <li>
+     <a href="#src"><span class="secno">3</span> <span class="content">Library Source Layout</span></a>
+     <ol class="toc">
+      <li>
+       <a href="#src.header-placement"><span class="secno">3.1</span> <span class="content">Header File Placement</span></a>
+       <ol class="toc">
+        <li><a href="#src.header-placement.separate"><span class="secno">3.1.1</span> <span class="content">Separate Header Placement</span></a>
+        <li><a href="#src.header-placement.merged"><span class="secno">3.1.2</span> <span class="content">Merged Header Placement</span></a>
+       </ol>
+      <li>
+       <a href="#src.tests"><span class="secno">3.2</span> <span class="content">Test Placement</span></a>
+       <ol class="toc">
+        <li><a href="#src.tests.merged"><span class="secno">3.2.1</span> <span class="content">Merged Test Placement</span></a>
+        <li><a href="#src.tests.separate"><span class="secno">3.2.2</span> <span class="content">Separate Test Placement</span></a>
+       </ol>
+      <li><a href="#src.layout"><span class="secno">3.3</span> <span class="content">Source Directory Layout</span></a>
+     </ol>
+    <li>
+     <a href="#submod"><span class="secno">4</span> <span class="content">Submodules</span></a>
+     <ol class="toc">
+      <li><a href="#submod.root"><span class="secno">4.1</span> <span class="content">Submodule Root</span></a>
+      <li><a href="#submod.dir"><span class="secno">4.2</span> <span class="content">Submodule Directory</span></a>
+      <li><a href="#submod.libs"><span class="secno">4.3</span> <span class="content"><code class="highlight"><c- n>libs</c-><c- o>/</c-></code></span></a>
+      <li><a href="#submod.extras"><span class="secno">4.4</span> <span class="content"><code class="highlight"><c- n>extras</c-><c- o>/</c-></code></span></a>
+     </ol>
+    <li><a href="#builds"><span class="secno">5</span> <span class="content">Build Systems</span></a>
+    <li><a href="#libraries"><span class="secno">6</span> <span class="content">Libraries</span></a>
+    <li><a href="#open-qs"><span class="secno">7</span> <span class="content">Open Questions</span></a>
+   </ol>
+  </nav>
+  <main>
+   <h2 class="heading settled" data-level="1" id="intro"><span class="secno">1. </span><span class="content">Introduction</span><a class="self-link" href="#intro"></a></h2>
+   <p>The phrase "it doesn’t matter, just be consistent" has really harmed the C++
+community more than it has helped. "A foolish consistency," if you will.
+Developers' desire to keep their codebase unique and "special" has held back
+the development of tooling when every user insists that a tool support their
+own custom style.</p>
+   <p>For some things, like where you put the opening brace, the difference might
+truly be insignificant. For other things, this isn’t the case.</p>
+   <p>One such thing is the layout of a project on a filesystem.</p>
+   <p>Incongruous layouts not only harms tooling, they create unnecessary disparity,
+create friction during on-boarding of contributors, and present a huge burden to
+beginners for a task that shouldn’t even take more than a few seconds of
+thought.</p>
+   <p>For virtually all projects, they are some (maybe improper) subset of a few key
+components:</p>
+   <ul>
+    <li data-md>
+     <p>Compilable source files</p>
+    <li data-md>
+     <p>Public headers</p>
+    <li data-md>
+     <p>Private headers</p>
+    <li data-md>
+     <p>Source files containing entry points (<code class="highlight"><c- n>main</c-><c- p>()</c-></code> functions)</p>
+    <li data-md>
+     <p>Documentation files</p>
+    <li data-md>
+     <p>Tests</p>
+    <li data-md>
+     <p>Samples and examples</p>
+    <li data-md>
+     <p>External libraries which have been embedded within the project structure</p>
+    <li data-md>
+     <p>"Add-ons" to the source (e.g. language bindings, optional plugins, platform
+bindings)</p>
+   </ul>
+   <p>In addition, it is very common to see projects which subdivide themselves into
+submodules. These submodules may also have dependencies between
+each-other. Submodules greatly increase the complexity potential, but aren’t
+completely out of the question. A project layout standard <em>must</em> be able to
+handle subdivided projects.</p>
+   <h3 class="heading settled" data-level="1.1" id="intro.bg"><span class="secno">1.1. </span><span class="content">Background and Terminology</span><a class="self-link" href="#intro.bg"></a></h3>
+   <p>The ideas and concepts presented herein are not novel. Rather, they are built
+upon the work of others. Some come from professional idea and experience, while
+others come from community convention, which has gradually converged on to
+prefer certain patterns while decrying others.</p>
+   <h4 class="heading settled" data-level="1.1.1" id="intro.bg.phy_log"><span class="secno">1.1.1. </span><span class="content">Physical vs. Logical Layout</span><a class="self-link" href="#intro.bg.phy_log"></a></h4>
+   <p>This document builds heavily upon the work of John Lakos, who has spear-headed
+much work on the aspects of <em>physical design</em>. Much work has been put into
+evangelizing in the area of <em>logical design</em>, but <em>physical design</em> to this day
+remains a topic that (in this author’s opinion) is too often overlooked when
+designing and implementing systems, as well as the teaching thereof.</p>
+   <p>John Lakos’s 1996 book <em>Large-Scale C++ Software Design</em>, to this day, remains
+as <em>the</em> book on <em>physical design</em> in C++.</p>
+   <p>So what’s the difference between <em>physical</em> and <em>logical</em> design?</p>
+   <p><strong>Logical design</strong> pertains closely to programming-language-level aspects of the
+design of a system.</p>
+   <p><strong>Physical design</strong> pertains to the aspects of design <em>outside</em> of what is
+encoded by the language.</p>
+   <p>The source unit dealt with by the C and C++ standards is the <em>translation
+unit</em>. This corresponds to a source file which has had all preprocessor
+directives resolved. This is the closest that the language standards get to
+discussing <em>physical design</em> of systems.</p>
+   <p>Physical design, despite its name, still lives within the digital space, of
+course. It concerns the placement and naming of files and directories within a
+filesystem, as well as how to coordinate communication between physical units
+where the relationship between their filesystem locations is not deterministic.</p>
+   <p>This document does not address much in the way of <em>logical design</em>. Rather, it
+is specifically written to address many common questions and resolve common
+answers for <em>physical design</em>.</p>
+   <h4 class="heading settled" data-level="1.1.2" id="intro.bg.component"><span class="secno">1.1.2. </span><span class="content">The <em>Physical Component</em></span><a class="self-link" href="#intro.bg.component"></a></h4>
+   <p>The most fundamental unit of <em>physical design</em> is the <strong>Component</strong>.</p>
+   <p>A <em>component</em> should correspond to exactly two files: A <em>header</em> and a <em>source</em> file. For some <em>rare</em> cases it may be beneficial to use more than a single
+source file in a single physical component, but it may be a sign that further
+refactoring is needed.</p>
+   <p>Additionally, a component may have a test source file, but it is not considered
+a part of the physical component.</p>
+   <h4 class="heading settled" data-level="1.1.3" id="intro.bg.coherence"><span class="secno">1.1.3. </span><span class="content">Logical/Physical Coherence</span><a class="self-link" href="#intro.bg.coherence"></a></h4>
+   <p>This document assumes that developers will work to maintain logical/physical <em>coherence</em>. There must be a coherent relationship between the logical and
+physical components of a system, and a single logical component must not be
+spread across multiple physical components. Multiple logical components should
+not appear within the same physical component.</p>
+   <p class="note" role="note"><span class="marker">Note:</span> <em>Logical components</em> can include more than an individual class or
+function. For example, it may include classes representing private data (for
+the PIMPL pattern), or <code class="highlight"><c- k>friend</c-></code> classes and functions. Blindly splitting every
+class and function into individual physical components is not required nor
+recommended.</p>
+   <p>Physical components must not form cyclic dependencies.</p>
+   <div class="example" id="example-27dc2e16">
+    <a class="self-link" href="#example-27dc2e16"></a> <strong>Example of friendship</strong>
+<pre class="language-c++ highlight"><c- c1>// list.hpp</c->
+<c- n>namespace</c-> <c- n>acme</c-> <c- p>{</c->
+
+<c- n>template</c-> <c- o>&lt;</c-><c- n>typename</c-> <c- n>T</c-><c- o>></c->
+<c- n>class</c-> <c- n>list</c-><c- p>;</c->
+
+<c- n>namespace</c-> <c- n>detail</c-> <c- p>{</c->
+
+<c- c1>// Class implementing a "list iterator"</c->
+<c- n>template</c-> <c- o>&lt;</c-><c- n>typename</c-> <c- n>T</c-><c- o>></c->
+<c- n>class</c-> <c- n>list_iterator</c-> <c- p>{</c->
+<c- n>public</c-><c- o>:</c->
+    <c- c1>// Public default constructor</c->
+    <c- n>list_iterator</c-><c- p>()</c-> <c- o>=</c-> <c- k>default</c-><c- p>;</c->
+
+<c- n>private</c-><c- o>:</c->
+    <c- c1>// A private constructor used to initialize the iterator to the proper state</c->
+    <c- n>explicit</c-> <c- n>list_iterator</c-><c- p>(</c-><c- n>list</c-><c- o>&lt;</c-><c- n>T</c-><c- o>>&amp;</c-><c- p>);</c->
+
+    <c- c1>// Permit our list class to construct us with the private constructor</c->
+    <c- n>friend</c-> <c- n>class</c-> <c- n>list</c-><c- o>&lt;</c-><c- n>T</c-><c- o>></c-><c- p>;</c->
+<c- p>};</c->
+
+<c- p>}</c->
+
+<c- n>template</c-> <c- o>&lt;</c-><c- n>typename</c-> <c- n>T</c-><c- o>></c->
+<c- n>class</c-> <c- n>list</c-> <c- p>{</c->
+<c- n>public</c-><c- o>:</c->
+    <c- n>using</c-> <c- n>iterator</c-> <c- o>=</c-> <c- n>detail</c-><c- o>::</c-><c- n>list_iterator</c-><c- o>&lt;</c-><c- n>T</c-><c- o>></c-><c- p>;</c->
+
+    <c- c1>// The iterator class is a friend, giving it access to our internals</c->
+    <c- n>friend</c-> <c- n>class</c-> <c- n>detail</c-><c- o>::</c-><c- n>list_iterator</c-><c- o>&lt;</c-><c- n>T</c-><c- o>></c-><c- p>;</c->
+<c- p>};</c->
+
+<c- p>}</c->
+</pre>
+    <p>The <code class="highlight"><c- n>list</c-><c- p>.</c-><c- n>cpp</c-></code> is empty other than a single include directive:</p>
+<pre class="language-c++ highlight"><c- c1>// list.cpp</c->
+<c- cp>#include</c-> "list.hpp"
+</pre>
+    <p>The purpose of the otherwise empty <code class="highlight"><c- n>list</c-><c- p>.</c-><c- n>cpp</c-></code> is to ensure that the <code class="highlight"><c- n>list</c-><c- p>.</c-><c- n>hpp</c-></code> file will compile in isolation, ensuring that the header has the necessary <code class="highlight"><c- cp>#include</c-></code> directives and/or forward declarations.</p>
+    <p>Despite having two distinct language-level <code class="highlight"><c- k>class</c-></code> templates, we have a single <em>logical component</em>. We say that these two class templates are "co-located."</p>
+    <p>We also have two source files, a <code class="highlight"><c- n>list</c-><c- p>.</c-><c- n>hpp</c-></code> and <code class="highlight"><c- n>list</c-><c- p>.</c-><c- n>cpp</c-></code>, but they together
+form a single <em>physical component</em>.</p>
+   </div>
+   <div class="example" id="example-039803c0">
+    <a class="self-link" href="#example-039803c0"></a> <strong>Example using PIMPL</strong>
+<pre class="language-c++ highlight"><c- c1>// connection.hpp</c->
+<c- cp>#include</c-> &lt;memory>
+
+<c- n>namespace</c-> <c- n>acme</c-> <c- p>{</c->
+
+<c- c1>// Forward-declare the private member data type</c->
+<c- n>namespace</c-> <c- n>detail</c-> <c- p>{</c-> <c- n>class</c-> <c- n>connection_ipml</c-><c- p>;</c-> <c- p>}</c->
+
+<c- c1>// The wrapper class</c->
+<c- n>class</c-> <c- n>connection</c-> <c- p>{</c->
+<c- n>private</c-><c- o>:</c->
+    <c- c1>// The actual PIMPL</c->
+    <c- n>std</c-><c- o>::</c-><c- n>unique_ptr</c-><c- o>&lt;</c-><c- n>detail</c-><c- o>::</c-><c- n>connection_impl</c-><c- o>></c-> <c- n>_impl</c-><c- p>;</c->
+
+<c- n>public</c-><c- o>:</c->
+    <c- n>connection</c-><c- p>(</c-><c- k>const</c-> <c- n>std</c-><c- o>::</c-><c- n>string</c-><c- o>&amp;</c-> <c- n>address</c-><c- p>);</c->
+    <c- o>~</c-><c- n>connection</c-><c- p>();</c->
+<c- p>};</c->
+
+<c- p>}</c->
+</pre>
+    <p>And a corresponding <code class="highlight"><c- n>connection</c-><c- p>.</c-><c- n>cpp</c-></code>:</p>
+<pre class="language-c++ highlight"><c- cp>#include</c-> "connection.hpp"
+
+<c- n>namespace</c-> <c- n>acme</c-><c- o>::</c-><c- n>detail</c-> <c- p>{</c->
+
+<c- n>class</c-> <c- n>connection_impl</c-> <c- p>{</c->
+    <c- c1>// Whatever we need for the connection...</c->
+<c- p>};</c->
+
+<c- p>}</c->
+
+<c- n>namespace</c-> <c- p>{</c->
+
+<c- n>std</c-><c- o>::</c-><c- n>unique_ptr</c-><c- o>&lt;</c-><c- n>acme</c-><c- o>::</c-><c- n>detail</c-><c- o>::</c-><c- n>connection_impl</c-><c- o>></c->
+<c- n>init_private_data</c-><c- p>(</c-><c- k>const</c-> <c- n>std</c-><c- o>::</c-><c- n>string</c-><c- o>&amp;</c-> <c- n>address</c-><c- p>)</c-> <c- p>{</c->
+    <c- c1>// Initialize and return the connection data...</c->
+<c- p>}</c->
+
+<c- p>}</c->
+
+<c- n>acme</c-><c- o>::</c-><c- n>connection</c-><c- o>::~</c-><c- n>connection</c-><c- p>()</c-> <c- o>=</c-> <c- k>default</c-><c- p>;</c->
+<c- n>acme</c-><c- o>::</c-><c- n>connection</c-><c- o>::</c-><c- n>connection</c-><c- p>(</c-><c- k>const</c-> <c- n>std</c-><c- o>::</c-><c- n>string</c-><c- o>&amp;</c-> <c- n>address</c-><c- p>)</c->
+    <c- o>:</c-> <c- n>_impl</c-><c- p>{</c-> <c- n>init_private_data</c-><c- p>(</c-><c- n>address</c-><c- p>)</c-> <c- p>}</c->
+<c- p>{}</c->
+</pre>
+    <p>Again we have two different (non-<code class="highlight"><c- k>template</c-></code>) classes, and a single logical
+component. In the header, the implementation detail class is only <em>forward</em> declared, not fully defined. In the <code class="highlight"><c- n>connection</c-><c- p>.</c-><c- n>cpp</c-></code> we provide the definition
+for the detail class.</p>
+   </div>
+   <h4 class="heading settled" data-level="1.1.4" id="into.bg.pkg"><span class="secno">1.1.4. </span><span class="content">Packages, Projects, Modules, and Submodules</span><a class="self-link" href="#into.bg.pkg"></a></h4>
+   <p>The terms defined in prior sections were heavily borrowed from John Lakos’s
+work. His work also often uses the term <em>package</em> to refer to a collection of
+source components. This would roughly correspond to the entire source
+repository, including build files, support files, documentation, scripts, and
+data.</p>
+   <p>Unfortunately, the term "package" has been heavily overloaded. These days,
+"package" most often refers to a unit of distribution of software, rather than
+the software itself. For this reason, this document prefers the term "project,"
+and will use it instead of "package," although they mean the same thing.</p>
+   <p>In a similar vein, the term <em>module</em> has also been heavily overloaded. In the
+wake of upcoming C++ module specifications and implementations, the word
+"module" will be avoided as to avoid ambiguity and confusion as a "module"
+corresponds with neither a <em>package</em>/<em>project</em> nor a <em>physical component</em>.</p>
+   <p>Still, a term is needed to refer to the subdivisions of a large project into
+smaller elements. For example, <em>Qt</em> is an enormous framework of many
+interconnected pieces. To refer to these pieces <em>Qt</em> uses the term "module",
+which has already been excluded.</p>
+   <p>For lack of a better unqualified term, the best this author can find is a
+qualified term: <em>Submodule</em>. This term will be used to denote separate sections
+of a project which can be consumed on as-needed basis. See the <a href="#submod">§ 4 Submodules</a> for more information.</p>
+   <h3 class="heading settled" data-level="1.2" id="intro.files"><span class="secno">1.2. </span><span class="content">Project Files</span><a class="self-link" href="#intro.files"></a></h3>
+   <p>PFL prescribes several files that should be present in the root of the project:</p>
+   <ul>
+    <li data-md>
+     <p>A <code class="highlight"><c- n>README</c-></code> file should be present. It should be easily readable in plaintext,
+but may use "enhanced" plaintext like Markdown or similar. It should
+contain a description of the contents of the directory and subdirectories.</p>
+    <li data-md>
+     <p>A <code class="highlight"><c- n>LICENSE</c-></code> file must be present for projects that wish to redistribute
+themselves. It must be plaintext (ie. not enhanced with markup).</p>
+   </ul>
+   <p>Tool-support files, such as <code class="highlight"><c- p>.</c-><c- n>gitignore</c-></code> and <code class="highlight"><c- p>.</c-><c- n>clang</c-><c- o>-</c-><c- n>format</c-></code>, may be present in
+this directory.</p>
+   <p>Other files in the root directory must be pertinent to the build system of the
+project. Other files should not appear in the root of the project.</p>
+   <h3 class="heading settled" data-level="1.3" id="intro.dirs"><span class="secno">1.3. </span><span class="content">Project Directories</span><a class="self-link" href="#intro.dirs"></a></h3>
+   <p>PFL prescribes several directories that should appear at the root of the project
+tree. Not all of the directories are required, but they have an assigned
+purpose, and no other directory in the filesystem may assume the role of one of
+these directories. That is, these directories must be the ones used if their
+purpose is required.</p>
+   <p>Other directories should not appear at the root.</p>
+   <p class="note" role="note"><span class="marker">Note:</span> If you have a need not fulfilled by a PFL directory listed below, that is
+a bug in this specification, and I would love to hear from you! Before
+reporting, double-check that what you need isn’t listed below and in the
+following sections.</p>
+   <dl>
+    <dt data-md><a href="#tld.build">build/</a>
+    <dd data-md>
+     <p>A special directory that should not be considered part of the source of the
+project. Used for storing ephemeral build results. must not be checked into
+source control. If using source control, must be ignored using source
+control ignore-lists.</p>
+    <dt data-md><a href="#tld.src">src/</a>
+    <dd data-md>
+     <p>Main compilable source location. must be present for projects with compiled
+components that do not use submodules.</p>
+     <p>In the presence of <a href="#tld.include">include/</a>, also contains private
+headers.</p>
+    <dt data-md><a href="#tld.include">include/</a>
+    <dd data-md>
+     <p>Directory for public headers. may be present. may be omitted for projects
+that do not distinguish between private/public headers. may be omitted for
+projects that use submodules.</p>
+    <dt data-md><a href="#tld.tests">tests/</a>
+    <dd data-md>
+     <p>Directory for tests.</p>
+    <dt data-md><a href="#tld.examples">examples/</a>
+    <dd data-md>
+     <p>Directory for samples and examples.</p>
+    <dt data-md><a href="#tld.external">external/</a>
+    <dd data-md>
+     <p>Directory for packages/projects to be used by the project, but not edited as
+part of the project.</p>
+    <dt data-md><a href="#tld.extras">extras/</a>
+    <dd data-md>
+     <p>Directory containing extra/optional submodules for the project.</p>
+    <dt data-md><a href="#tld.data">data/</a>
+    <dd data-md>
+     <p>Directory containing non-source code aspects of the project. This might
+include graphics and markup files.</p>
+    <dt data-md><a href="#tld.tools">tools/</a>
+    <dd data-md>
+     <p>Directory containing development utilities, such as build and refactoring
+scripts</p>
+    <dt data-md><a href="#tld.docs">docs/</a>
+    <dd data-md>
+     <p>Directory for project documentation.</p>
+    <dt data-md><a href="#tld.libs">libs/</a>
+    <dd data-md>
+     <p>Directory for main project submodules.</p>
+   </dl>
+   <h2 class="heading settled" data-level="2" id="tld"><span class="secno">2. </span><span class="content">Top-Level Directories</span><a class="self-link" href="#tld"></a></h2>
+   <p>Pitchfork specifies several top-level directories. Other directories should not
+be present in the root directory, except for what is required by other tooling.</p>
+   <h3 class="heading settled" data-level="2.1" id="tld.build"><span class="secno">2.1. </span><span class="content"><code class="highlight"><c- n>build</c-><c- o>/</c-></code></span><a class="self-link" href="#tld.build"></a></h3>
+   <p>This directory is not required, but its name should be reserved.</p>
+   <p>The <code class="highlight"><c- n>build</c-><c- o>/</c-></code> directory is special in that it must not be committed to a source
+control system. A user downloading the codebase should not see a <code class="highlight"><c- n>build</c-><c- o>/</c-></code> directory present in the project root, but one may be created in the course of
+working with the software. The <code class="highlight"><c- n>_build</c-><c- o>/</c-></code> directory is also reserved.</p>
+   <p class="note" role="note"><span class="marker">Note:</span> Some build systems may commandeer the <code class="highlight"><c- n>build</c-><c- o>/</c-></code> directory for themselves.
+In this case, the directory <code class="highlight"><c- n>_build</c-><c- o>/</c-></code> should be used in place of <code class="highlight"><c- n>build</c-><c- o>/</c-></code>.</p>
+   <p>The <code class="highlight"><c- n>build</c-><c- o>/</c-></code> directory may be used for ephemeral build results. Other uses of
+the directory are not permitted.</p>
+   <p>Creation of additional directories for build results in the root directory is
+not permitted.</p>
+   <p class="note" role="note"><span class="marker">Note:</span> Although multiple <em>root</em> directories are not allowed, the structure and
+layout of the <code class="highlight"><c- n>build</c-><c- o>/</c-></code> directory is not prescribed. Multiple subdirectories of <code class="highlight"><c- n>build</c-><c- o>/</c-></code> may be used to hold multiple build results of different configuration.</p>
+   <h3 class="heading settled" data-level="2.2" id="tld.include"><span class="secno">2.2. </span><span class="content"><code class="highlight"><c- n>include</c-><c- o>/</c-></code></span><a class="self-link" href="#tld.include"></a></h3>
+   <p class="note" role="note"><span class="marker">Note:</span> The <code class="highlight"><c- n>include</c-><c- o>/</c-></code> and <a href="#tld.src">src/</a> directories are very closely
+related. Be sure to also read its section in addition to this one.</p>
+   <p>The purpose of the <code class="highlight"><c- n>include</c-><c- o>/</c-></code> directory is to hold <em>public API</em> headers.</p>
+   <p>The <code class="highlight"><c- n>include</c-><c- o>/</c-></code> directory should not be used if using <a href="#src.header-placement.merged">§ 3.1.2 Merged Header Placement</a>.</p>
+   <p>See <a href="#src">§ 3 Library Source Layout</a>.</p>
+   <h3 class="heading settled" data-level="2.3" id="tld.src"><span class="secno">2.3. </span><span class="content"><code class="highlight"><c- n>src</c-><c- o>/</c-></code></span><a class="self-link" href="#tld.src"></a></h3>
+   <p class="note" role="note"><span class="marker">Note:</span> The <code class="highlight"><c- n>src</c-><c- o>/</c-></code> and <a href="#tld.include">include/</a> directories are very closely
+related. Be sure to also read its section in addition to this one.</p>
+   <p>The purpose and content of <code class="highlight"><c- n>src</c-><c- o>/</c-></code> depends on whether the project authors choose
+to follow <a href="#src.header-placement.merged">§ 3.1.2 Merged Header Placement</a> or <a href="#src.header-placement.separate">§ 3.1.1 Separate Header Placement</a>.</p>
+   <p>See <a href="#src">§ 3 Library Source Layout</a>.</p>
+   <h3 class="heading settled" data-level="2.4" id="tld.tests"><span class="secno">2.4. </span><span class="content"><code class="highlight"><c- n>tests</c-><c- o>/</c-></code></span><a class="self-link" href="#tld.tests"></a></h3>
+   <p>This directory is not required.</p>
+   <p>The <code class="highlight"><c- n>tests</c-><c- o>/</c-></code> directory is reserved for source files related to (non-unit) tests
+for the project.</p>
+   <p>The structure and layout of this directory is not prescribed by this document.</p>
+   <p>A project which can be embedded in another project (such as via <a href="#tld.external">§ 2.6 external/</a>), must disable its <code class="highlight"><c- n>tests</c-><c- o>/</c-></code> directory if it can detect that it
+is being built as an embedded sub-project.</p>
+   <p>Project maintainers must provide a way for consumers to disable the compilation
+and running of tests, especially for the purpose of embedding.</p>
+   <h3 class="heading settled" data-level="2.5" id="tld.examples"><span class="secno">2.5. </span><span class="content"><code class="highlight"><c- n>examples</c-><c- o>/</c-></code></span><a class="self-link" href="#tld.examples"></a></h3>
+   <p>This directory is not required.</p>
+   <p>The <code class="highlight"><c- n>examples</c-><c- o>/</c-></code> directory is reserved for source files related to example and
+sample usage of the project. The structure and layout of this directory is not
+prescribed by this document.</p>
+   <p>Project maintainers must provide a way for consumers to disable the compilation
+of examples and samples.</p>
+   <h3 class="heading settled" data-level="2.6" id="tld.external"><span class="secno">2.6. </span><span class="content"><code class="highlight"><c- n>external</c-><c- o>/</c-></code></span><a class="self-link" href="#tld.external"></a></h3>
+   <p>This directory is not required.</p>
+   <p>The <code class="highlight"><c- n>external</c-><c- o>/</c-></code> directory is reserved for embedding of external projects. Each
+embedded project should occupy a single subdirectory of <code class="highlight"><c- n>external</c-><c- o>/</c-></code>.</p>
+   <p><code class="highlight"><c- n>external</c-><c- o>/</c-></code> should not contain files other than those required by tooling.</p>
+   <p>This directory may be automatically populated, either partially or completely,
+by tools (eg. <code class="highlight"><c- n>git</c-></code> submodules) as part of a build process. In this case,
+projects must declare the auto-populated subdirectories as ignored by relevant
+source control systems.</p>
+   <p>Subdirectories of <code class="highlight"><c- n>external</c-><c- o>/</c-></code> should not be modified as part of regular project
+development. Subdirectories should remain as close to their upstream source as
+possible.</p>
+   <h3 class="heading settled" data-level="2.7" id="tld.data"><span class="secno">2.7. </span><span class="content"><code class="highlight"><c- n>data</c-><c- o>/</c-></code></span><a class="self-link" href="#tld.data"></a></h3>
+   <p>This directory is not required.</p>
+   <p>The <code class="highlight"><c- n>data</c-><c- o>/</c-></code> directory is designated for holding project files which should be
+included in revision control, but are not explicitly code. For example,
+graphics and localization files are not code in the same sense as the rest of
+the project, but are good candidates for inclusion in the <code class="highlight"><c- n>data</c-><c- o>/</c-></code> directory.</p>
+   <p>The structure and layout of this directory is not prescribed by this document.</p>
+   <h3 class="heading settled" data-level="2.8" id="tld.tools"><span class="secno">2.8. </span><span class="content"><code class="highlight"><c- n>tools</c-><c- o>/</c-></code></span><a class="self-link" href="#tld.tools"></a></h3>
+   <p>This directory is not required.</p>
+   <p>The <code class="highlight"><c- n>tools</c-><c- o>/</c-></code> directory is designated for holding extra scripts and tools related
+to developing and contributing to the project. For example, turn-key build
+scripts, linting scripts, code-generation scripts, test scripts, or other tools
+that may be useful to a project develop.</p>
+   <p>The contents of this directory should not be relevant to a project consumer.</p>
+   <h3 class="heading settled" data-level="2.9" id="tld.docs"><span class="secno">2.9. </span><span class="content"><code class="highlight"><c- n>docs</c-><c- o>/</c-></code></span><a class="self-link" href="#tld.docs"></a></h3>
+   <p>This directory is not required.</p>
+   <p>The <code class="highlight"><c- n>docs</c-><c- o>/</c-></code> directory is designated to contain project documentation. The
+documentation process, tools, and layout is not prescribed by this document.</p>
+   <h3 class="heading settled" data-level="2.10" id="tld.libs"><span class="secno">2.10. </span><span class="content"><code class="highlight"><c- n>libs</c-><c- o>/</c-></code></span><a class="self-link" href="#tld.libs"></a></h3>
+   <p>The <code class="highlight"><c- n>libs</c-><c- o>/</c-></code> directory must not be used unless the project wishes to subdivide
+itself into <a href="#submod">submodules</a>. Its presence excludes the <a href="#tld.src">src/</a> and <a href="#tld.include">include/</a> directories.</p>
+   <p>See <a href="#submod">§ 4 Submodules</a> and <a href="#submod.libs">§ 4.3 libs/</a>.</p>
+   <h3 class="heading settled" data-level="2.11" id="tld.extras"><span class="secno">2.11. </span><span class="content"><code class="highlight"><c- n>extras</c-><c- o>/</c-></code></span><a class="self-link" href="#tld.extras"></a></h3>
+   <p>This directory is not required.</p>
+   <p><code class="highlight"><c- n>extras</c-><c- o>/</c-></code> is a <a href="#submod.root">submodule root</a>. See <a href="#submod">§ 4 Submodules</a> and <a href="#submod.extras">§ 4.4 extras/</a>.</p>
+   <h2 class="heading settled" data-level="3" id="src"><span class="secno">3. </span><span class="content">Library Source Layout</span><a class="self-link" href="#src"></a></h2>
+   <p>A <em>library source tree</em> refers to the layout of source code files that comprise
+a single library, which is a collection of code that is exposed to the library’s <em>consumer</em>.</p>
+   <h3 class="heading settled" data-level="3.1" id="src.header-placement"><span class="secno">3.1. </span><span class="content">Header File Placement</span><a class="self-link" href="#src.header-placement"></a></h3>
+   <p>This document supports two different methods of placing headers in a single
+library: <em>separate</em> and <em>merged</em>. These two methods are mutually exclusive
+within a single library source tree.</p>
+   <h4 class="heading settled" data-level="3.1.1" id="src.header-placement.separate"><span class="secno">3.1.1. </span><span class="content">Separate Header Placement</span><a class="self-link" href="#src.header-placement.separate"></a></h4>
+   <p>In <em>separated</em> placement, there are two <em>source directories</em>, <a href="#tld.include">§ 2.2 include/</a> and <a href="#tld.src">§ 2.3 src/</a>. The <code class="highlight"><c- n>include</c-><c- o>/</c-></code> directory is designated to contain the <em>public</em> headers of the library, while the <em>src/</em> directory is designated to contain
+the compilable source code and <em>private</em> headers.</p>
+   <p class="note" role="note"><span class="marker">Note:</span> Not all projects will necessarily have private headers.</p>
+   <p>In separate placement, a single physical component is split between the two
+directories. The relative path to the parent directory of a compilable source
+file in the <code class="highlight"><c- n>src</c-><c- o>/</c-></code> directory must be equivalent to the relative path to the
+parent directory of the header in the <code class="highlight"><c- n>include</c-><c- o>/</c-></code> directory that corresponds to
+the compilable source file.</p>
+   <div class="example" id="example-b5180b24">
+    <a class="self-link" href="#example-b5180b24"></a> Given a physical component of a header file <code class="highlight"><c- n>meow</c-><c- p>.</c-><c- n>hpp</c-></code> and a source file <code class="highlight"><c- n>meow</c-><c- p>.</c-><c- n>cpp</c-></code>, we might place the header at <code class="highlight"><c- n>include</c-><c- o>/</c-><c- n>cat</c-><c- o>/</c-><c- n>sounds</c-><c- o>/</c-><c- n>meow</c-><c- p>.</c-><c- n>hpp</c-></code>. The
+relative path from <code class="highlight"><c- n>include</c-><c- o>/</c-></code> to the parent directory of <code class="highlight"><c- n>meow</c-><c- p>.</c-><c- n>hpp</c-></code> is <code class="highlight"><c- n>cat</c-><c- o>/</c-><c- n>sounds</c-><c- p>.</c-></code>
+    <p>Thus, we can compose the path to the compilable source file as joining the
+source directory name <code class="highlight"><c- n>src</c-></code>, the relative path <code class="highlight"><c- n>cat</c-><c- o>/</c-><c- n>sounds</c-></code>, and the filename <code class="highlight"><c- n>meow</c-><c- p>.</c-><c- n>cpp</c-></code> to get the path <code class="highlight"><c- n>src</c-><c- o>/</c-><c- n>cat</c-><c- o>/</c-><c- n>sounds</c-><c- o>/</c-><c- n>meow</c-><c- p>.</c-><c- n>cpp</c-></code>. The following layout
+results:</p>
+<pre class="language-text highlight">&lt;root>/
+    include/
+        cat/
+            sounds/
+                meow.hpp
+    src/
+        cat/
+            sounds/
+                meow.cpp
+</pre>
+   </div>
+   <p class="note" role="note"><span class="marker">Note:</span> The purpose of the deterministic header/file path relationship is to aid
+both tools and human viewers in understanding and manipulating the source
+directory structure.</p>
+   <p class="note" role="note"><span class="marker">Note:</span> The relative paths of these physical components is not arbitrary. See <a href="#src.layout">§ 3.3 Source Directory Layout</a>.</p>
+   <p>Consumers of a library using separated header layout should be given the path to
+the <a href="#tld.include">§ 2.2 include/</a> directory as the sole include search directory for the
+library’s public interface. This prevents users from being able to <code class="highlight"><c- cp>#include</c-></code> paths which exist only in the <code class="highlight"><c- n>src</c-><c- o>/</c-></code> directory.</p>
+   <p>The library itself should be compiled with both its <a href="#tld.include">§ 2.2 include/</a> and <a href="#tld.src">§ 2.3 src/</a> directories as include search directories. This ensures that the
+library itself can access all files within both source directories.</p>
+   <h4 class="heading settled" data-level="3.1.2" id="src.header-placement.merged"><span class="secno">3.1.2. </span><span class="content">Merged Header Placement</span><a class="self-link" href="#src.header-placement.merged"></a></h4>
+   <p>In <em>merged</em> header placement, there is a single <em>source directory</em>, <a href="#tld.src">§ 2.3 src/</a>.</p>
+   <p>Much like with separated placement, the relative path from the source directory
+to the parent of directory of the files of a physical component must be the
+same. This implies that the files of a physical component will always be <em>sibling</em> files in the same directory.</p>
+   <div class="example" id="example-44bbf6cd">
+    <a class="self-link" href="#example-44bbf6cd"></a> Given a physical component with header <code class="highlight"><c- n>hiss</c-><c- p>.</c-><c- n>hpp</c-></code> and <code class="highlight"><c- n>hiss</c-><c- p>.</c-><c- n>cpp</c-></code>, and a relative
+path of <code class="highlight"><c- n>cat</c-><c- o>/</c-><c- n>sounds</c-></code>, the resulting layout is defined:
+<pre class="language-text highlight">&lt;root>/
+    src/
+        cat/
+            sounds/
+                hiss.hpp
+                hiss.cpp
+</pre>
+   </div>
+   <h3 class="heading settled" data-level="3.2" id="src.tests"><span class="secno">3.2. </span><span class="content">Test Placement</span><a class="self-link" href="#src.tests"></a></h3>
+   <p>This document distinguishes between <em>unit</em> tests, and other tests. Unit tests
+are tests that roughly correspond to a single single <em>unit</em> of the source code.
+This may be a physical component, public API, or combination thereof. The
+distinguishing of a unit test has implications on where it may be placed.</p>
+   <h4 class="heading settled" data-level="3.2.1" id="src.tests.merged"><span class="secno">3.2.1. </span><span class="content">Merged Test Placement</span><a class="self-link" href="#src.tests.merged"></a></h4>
+   <p>Optional but recommended is to use <em>merged</em> test placement. In this method,
+a unit test should have exactly one compilable source file, and that filename
+stem should be the same as the filename stem of the physical component under
+test, with a <code class="highlight"><c- p>.</c-><c- n>test</c-></code> appended to it. For example, a test for the physical
+component comprised of <code class="highlight"><c- n>meow</c-><c- p>.</c-><c- n>hpp</c-></code> and <code class="highlight"><c- n>meow</c-><c- p>.</c-><c- n>cpp</c-></code> will be named <code class="highlight"><c- n>meow</c-><c- p>.</c-><c- n>test</c-><c- p>.</c-><c- n>cpp</c-></code>.
+This unit test source file should be placed in the same directory as a
+compilable source file of the physical component under test. Therefore, when
+the unit has a compilable source file, the unit test source file will appear as
+a sibling of the compilable source file.</p>
+   <h4 class="heading settled" data-level="3.2.2" id="src.tests.separate"><span class="secno">3.2.2. </span><span class="content">Separate Test Placement</span><a class="self-link" href="#src.tests.separate"></a></h4>
+   <p>If not using merged tests, all tests should be placed within the <a href="#tld.tests">tests/</a> top-level directory. There are no mandates on the layout
+within <code class="highlight"><c- n>tests</c-><c- o>/</c-></code>.</p>
+   <h3 class="heading settled" data-level="3.3" id="src.layout"><span class="secno">3.3. </span><span class="content">Source Directory Layout</span><a class="self-link" href="#src.layout"></a></h3>
+   <p>For the purposes of this section, the <a href="#tld.include">include/</a> and <a href="#tld.src">src/</a> top-level directories are both included in the definition of
+"source directories." They are root of the <em>library source tree</em>. They are
+named as such because they contain the primary "source files" of the source
+language (C and/or C++).</p>
+   <p>No non-source-code files will should be placed <em>or generated</em> in any
+subdirectories of a source directory. That is, the root of a source directory
+may contain non-source-code files, but no child directories should.</p>
+   <p>Conversely, no source-code files should be placed in the root of a source
+directory. That is, all source files must have <em>qualified paths</em> relative to the
+root of their source directory.</p>
+   <p>Header files and source files should correspond to a logical component of the
+project. For example, a <code class="highlight"><c- n>geometry</c-></code> library might contain a <code class="highlight"><c- n>circle</c-></code> class along
+a single header and (optional) source file to represent it. If no other
+logical components appear in that header and/or source file, the logical
+component can be said to be the "main component" of the corresponding source
+component. The main logical component may be a <code class="highlight"><c- k>class</c-></code>, function, or some
+grouping thereof.</p>
+   <p>The layout of the source tree should closely correspond to the namespace
+structure of the project.</p>
+   <p>In C, there is no language-level concept of a namespace, but there is the
+convention of qualifying globally visible identifiers with a "pseudo" namespace.
+For example, a <code class="highlight"><c- n>libfoo</c-></code> might define a <code class="highlight"><c- n>foo_create</c-><c- p>()</c-></code>, where the prefix <code class="highlight"><c- n>foo_</c-></code> acts as the "namespace" for the identifier. The namespace for these purposes can
+be said to be <code class="highlight"><c- n>foo</c-></code>.</p>
+   <p>In C++, which has a language-level <code class="highlight"><c- k>namespace</c-></code>, the need to qualify identifiers
+in this way is not necessary (when using C++ linkage). Instead, these qualifiers
+are put in <code class="highlight"><c- k>namespace</c-></code>s.</p>
+   <p>Given that each logical component has a namespace, we can associate that
+namespace with the physical component in which it is defined. This namespace
+can then be used to generate a qualified path by which the physical component
+can be found. In this way, physical components can be considered
+"content-addressable".</p>
+   <p>Source files should be placed in a directory relative to the source
+directory where the relative path is composed by joining the elements of the
+component namespace as intermediate directories. The stem of the source filename
+should correspond to the name of the logical component which it declares or
+defines.</p>
+   <div class="example" id="example-3132079c">
+    <a class="self-link" href="#example-3132079c"></a> Given a logical component <code class="highlight"><c- n>geo</c-><c- o>::</c-><c- n>shapes</c-><c- o>::</c-><c- n>circle</c-></code>, we can use the qualifying
+namespace to generate the relative path <code class="highlight"><c- n>geo</c-><c- o>/</c-><c- n>shapes</c-></code>, and the component’s leaf
+name as a basis for the filename of <code class="highlight"><c- n>circle</c-></code>. Thus, the full path to the sources
+defining the logical component are <code class="highlight"><c- n>geo</c-><c- o>/</c-><c- n>shapes</c-><c- o>/</c-><c- n>circle</c-><c- p>.</c-><c- n>hpp</c-></code> and <code class="highlight"><c- n>geo</c-><c- o>/</c-><c- n>shapes</c-><c- o>/</c-><c- n>circle</c-><c- p>.</c-><c- n>cpp</c-></code>.
+    <p>If using <a href="#src.header-placement.separate">§ 3.1.1 Separate Header Placement</a>, the path from the project or
+submodule root to the header will be <code class="highlight"><c- n>include</c-><c- o>/</c-><c- n>geo</c-><c- o>/</c-><c- n>shapes</c-><c- o>/</c-><c- n>circle</c-><c- p>.</c-><c- n>hpp</c-></code>, and the
+path to the compiled source file will be <code class="highlight"><c- n>src</c-><c- o>/</c-><c- n>geo</c-><c- o>/</c-><c- n>shapes</c-><c- o>/</c-><c- n>circle</c-><c- p>.</c-><c- n>cpp</c-></code>.</p>
+    <p>If using <a href="#src.header-placement.merged">§ 3.1.2 Merged Header Placement</a>, then the header will appear as a
+sibling in <code class="highlight"><c- n>src</c-><c- o>/</c-><c- n>geo</c-><c- o>/</c-><c- n>shapes</c-><c- o>/</c-><c- n>circle</c-><c- p>.</c-><c- n>hpp</c-></code>.</p>
+    <p>The unit test for this component will appear at <code class="highlight"><c- n>src</c-><c- o>/</c-><c- n>geo</c-><c- o>/</c-><c- n>shapes</c-><c- o>/</c-><c- n>circle</c-><c- p>.</c-><c- n>test</c-><c- p>.</c-><c- n>cpp</c-></code>.</p>
+   </div>
+   <p>In some cases, it may be advantageous to separate the compiled source file into
+multiple compiled source files while maintaining a single header file. In this
+case, the stem of the source file should begin the same as if it were not
+subdivided, then qualified with a <code class="highlight"><c- p>.</c-></code> separating the distinguishing
+characteristic of the source file.</p>
+   <div class="example" id="example-6df37109">
+    <a class="self-link" href="#example-6df37109"></a> Given a logical component <code class="highlight"><c- n>geo</c-><c- o>::</c-><c- n>shapes</c-><c- o>::</c-><c- n>circle</c-></code>, and two <em>extremely complex</em> member functions <code class="highlight"><c- n>circumference</c-><c- p>()</c-></code> and <code class="highlight"><c- n>area</c-><c- p>()</c-></code>, we might split the
+implementations of these methods into separate translation units. The resulting
+physical component will have the following appearance:
+<pre class="highlight"><c- o>&lt;</c-><c- n>root</c-><c- o>></c->
+    <c- n>src</c-><c- o>/</c-><c- n>geo</c-><c- o>/</c-><c- n>shapes</c-><c- o>/</c->
+        <c- n>circle</c-><c- p>.</c-><c- n>hpp</c->
+        <c- n>circle</c-><c- p>.</c-><c- n>cpp</c->
+        <c- n>circle</c-><c- p>.</c-><c- n>circumference</c-><c- p>.</c-><c- n>cpp</c->
+        <c- n>circle</c-><c- p>.</c-><c- n>area</c-><c- p>.</c-><c- n>cpp</c->
+        <c- n>circle</c-><c- p>.</c-><c- n>test</c-><c- p>.</c-><c- n>cpp</c->
+</pre>
+   </div>
+   <h2 class="heading settled" data-level="4" id="submod"><span class="secno">4. </span><span class="content">Submodules</span><a class="self-link" href="#submod"></a></h2>
+   <p>Very large projects (eg. Qt, Boost, JUCE, LLVM) will benefit from the concept of <em>submodules</em>.</p>
+   <dl>
+    <dt data-md>Submodule
+    <dd data-md>
+     <p>A subdivision of a larger project which can be consumed as-needed. Contains
+its own source trees, tests, data, and documentation.</p>
+   </dl>
+   <p class="note" role="note"><span class="marker">Note:</span> Splitting a project into submodules should be considered <em>very carefully</em>.
+It is an extremely heavy tool with subtleties that often trip people up. Very
+few projects warrant subdividing themselves in this way.
+Most projects will do just fine with multiple namespaces and directories within
+their source tree. Don’t reach for this tool when namespaces and subdirectories
+will suite you just fine. Converting a project to/from a submodule layout is
+a very cumbersome task.</p>
+   <p>The following rules must be taken into consideration when considering or using
+submodules:</p>
+   <ul>
+    <li data-md>
+     <p><strong>Submodules are not themselves standalone projects</strong>.</p>
+    <li data-md>
+     <p>They should not pretend to be entire projects.</p>
+    <li data-md>
+     <p>They cannot be consumed independent of the rest of the project.</p>
+    <li data-md>
+     <p>They should not be versioned separately from the project.</p>
+    <li data-md>
+     <p>They <em>cannot</em> further subdivide into sub-submodules.</p>
+   </ul>
+   <h3 class="heading settled" data-level="4.1" id="submod.root"><span class="secno">4.1. </span><span class="content">Submodule Root</span><a class="self-link" href="#submod.root"></a></h3>
+   <dl>
+    <dt data-md>Submodule Root
+    <dd data-md>
+     <p>A directory whose child directories are <a href="#submod.dir">submodules</a>.</p>
+   </dl>
+   <p>Submodule roots include:</p>
+   <ul>
+    <li data-md>
+     <p><a href="#tld.extras">§ 2.11 extras/</a></p>
+    <li data-md>
+     <p><a href="#submod.libs">§ 4.3 libs/</a></p>
+   </ul>
+   <p>Each subdirectory of a submodule root must correspond to exactly one submodule.</p>
+   <h3 class="heading settled" data-level="4.2" id="submod.dir"><span class="secno">4.2. </span><span class="content">Submodule Directory</span><a class="self-link" href="#submod.dir"></a></h3>
+   <p>A submodule is represented as a subdirectory of the project which may contain
+the following directories:</p>
+   <ul>
+    <li data-md>
+     <p><a href="#tld.src">src/</a> for submodule sources</p>
+    <li data-md>
+     <p><a href="#tld.include">include/</a> for submodule includes (if splitting headers)</p>
+    <li data-md>
+     <p><a href="#tld.tests">tests/</a> for submodule tests</p>
+    <li data-md>
+     <p><a href="#tld.data">data/</a> for submodule data</p>
+    <li data-md>
+     <p><a href="#tld.examples">examples/</a> for examples</p>
+    <li data-md>
+     <p><a href="#tld.docs">docs/</a> for submodule documentation</p>
+   </ul>
+   <p class="note" role="note"><span class="marker">Note:</span> Most of the <a href="#tld">top-level directories</a> are <em>absent</em> from this list.</p>
+   <p>Submodules directories should not contain other files or directories except
+those required by tooling.</p>
+   <h3 class="heading settled" data-level="4.3" id="submod.libs"><span class="secno">4.3. </span><span class="content"><code class="highlight"><c- n>libs</c-><c- o>/</c-></code></span><a class="self-link" href="#submod.libs"></a></h3>
+   <p>The <code class="highlight"><c- n>libs</c-><c- o>/</c-></code> directory is for <em>main</em> submodules. It is a <a href="#submod.root">submodule root</a>.</p>
+   <p>When the <code class="highlight"><c- n>libs</c-><c- o>/</c-></code> directory is present, the top-level <code class="highlight"><c- n>src</c-><c- o>/</c-></code> and <code class="highlight"><c- n>include</c-><c- o>/</c-></code> directories must not be present. Instead of having a root source tree, a project
+using <code class="highlight"><c- n>libs</c-><c- o>/</c-></code> for submodules should instead refactor itself such that the
+project has a common basis submodule upon which other submodules will may
+depend.</p>
+   <p>The main difference between <code class="highlight"><c- n>libs</c-><c- o>/</c-></code> and <a href="#tld.extras">extras/</a> is that the <code class="highlight"><c- n>libs</c-><c- o>/</c-></code> submodules found in <code class="highlight"><c- n>libs</c-><c- o>/</c-></code> should be built _by default_, although a
+consumer may opt-out of the submodules on an as-needed basis.</p>
+   <h3 class="heading settled" data-level="4.4" id="submod.extras"><span class="secno">4.4. </span><span class="content"><code class="highlight"><c- n>extras</c-><c- o>/</c-></code></span><a class="self-link" href="#submod.extras"></a></h3>
+   <p>The <code class="highlight"><c- n>extras</c-><c- o>/</c-></code> directory is designated for containing additional submodules for
+the project which build upon the main component(s). This may include submodules
+that are not part of the project’s "default" build, or otherwise impose special
+requirements to be used.</p>
+   <p>For example, the following might be candidates for <code class="highlight"><c- n>extra</c-><c- o>/</c-></code> rather than regular
+components:</p>
+   <ol>
+    <li data-md>
+     <p>"Language bindings" or extra libraries that provide integrations of the
+project with programming languages or runtimes different from its own.</p>
+    <li data-md>
+     <p>"Platform bindings" or extra libraries (plugins) that integrate the project
+with a particular platform. For example, a windowing library that needs to
+understand how to talk with Windows, Quartz, X11, and Wayland would include
+its platform integration implementations in this directory.</p>
+    <li data-md>
+     <p>"Contributed" submodules. Additional submodules that are contributed by the
+project’s users and included in upstream, but are not officially supported
+by the project.</p>
+    <li data-md>
+     <p>Optional submodules that require additional dependencies, or may be
+prohibitive to include for all users. For example, Qt’s Webkit module is
+prohibitively time consuming to build, and it requires the presence of
+dependencies that are only required exactly for that one component.</p>
+   </ol>
+   <h2 class="heading settled" data-level="5" id="builds"><span class="secno">5. </span><span class="content">Build Systems</span><a class="self-link" href="#builds"></a></h2>
+   <p>This document does not mandate any particular build system. The only
+requirements is that the chosen build system support the layout herein defined.</p>
+   <h2 class="heading settled" data-level="6" id="libraries"><span class="secno">6. </span><span class="content">Libraries</span><a class="self-link" href="#libraries"></a></h2>
+   <p>For library projects, a source tree should correspond to <em>exactly one</em> library.
+That is, <em>at most one one</em> linkable result, and <em>exactly one</em> public include
+directory. A single <code class="highlight"><c- cp>#include</c-></code> tree must not require linking more than one
+library to access all symbols exported from that tree.</p>
+   <p class="note" role="note"><span class="marker">Note:</span> Submodules, having their own source tree, may each contain a library that
+can be linked and consumed independently.</p>
+   <p>A single source tree should not vary its public interface based on anything
+other than the target platform. This has several big implications, including
+(but not limited to) the following:</p>
+   <ul>
+    <li data-md>
+     <p>A library should not offer the user controls for tweaking its public
+interface.</p>
+    <li data-md>
+     <p>A library should not change its public interface based on the
+presence/absence of external software.</p>
+   </ul>
+   <h2 class="heading settled" data-level="7" id="open-qs"><span class="secno">7. </span><span class="content">Open Questions</span><a class="self-link" href="#open-qs"></a></h2>
+  </main>
+<script>
+(function() {
+  "use strict";
+  var collapseSidebarText = '<span aria-hidden="true">←</span> '
+                          + '<span>Collapse Sidebar</span>';
+  var expandSidebarText   = '<span aria-hidden="true">→</span> '
+                          + '<span>Pop Out Sidebar</span>';
+  var tocJumpText         = '<span aria-hidden="true">↑</span> '
+                          + '<span>Jump to Table of Contents</span>';
+
+  var sidebarMedia = window.matchMedia('screen and (min-width: 78em)');
+  var autoToggle   = function(e){ toggleSidebar(e.matches) };
+  if(sidebarMedia.addListener) {
+    sidebarMedia.addListener(autoToggle);
+  }
+
+  function toggleSidebar(on) {
+    if (on == undefined) {
+      on = !document.body.classList.contains('toc-sidebar');
+    }
+
+    /* Don't scroll to compensate for the ToC if we're above it already. */
+    var headY = 0;
+    var head = document.querySelector('.head');
+    if (head) {
+      // terrible approx of "top of ToC"
+      headY += head.offsetTop + head.offsetHeight;
+    }
+    var skipScroll = window.scrollY < headY;
+
+    var toggle = document.getElementById('toc-toggle');
+    var tocNav = document.getElementById('toc');
+    if (on) {
+      var tocHeight = tocNav.offsetHeight;
+      document.body.classList.add('toc-sidebar');
+      document.body.classList.remove('toc-inline');
+      toggle.innerHTML = collapseSidebarText;
+      if (!skipScroll) {
+        window.scrollBy(0, 0 - tocHeight);
+      }
+      tocNav.focus();
+      sidebarMedia.addListener(autoToggle); // auto-collapse when out of room
+    }
+    else {
+      document.body.classList.add('toc-inline');
+      document.body.classList.remove('toc-sidebar');
+      toggle.innerHTML = expandSidebarText;
+      if (!skipScroll) {
+        window.scrollBy(0, tocNav.offsetHeight);
+      }
+      if (toggle.matches(':hover')) {
+        /* Unfocus button when not using keyboard navigation,
+           because I don't know where else to send the focus. */
+        toggle.blur();
+      }
+    }
+  }
+
+  function createSidebarToggle() {
+    /* Create the sidebar toggle in JS; it shouldn't exist when JS is off. */
+    var toggle = document.createElement('a');
+      /* This should probably be a button, but appearance isn't standards-track.*/
+    toggle.id = 'toc-toggle';
+    toggle.class = 'toc-toggle';
+    toggle.href = '#toc';
+    toggle.innerHTML = collapseSidebarText;
+
+    sidebarMedia.addListener(autoToggle);
+    var toggler = function(e) {
+      e.preventDefault();
+      sidebarMedia.removeListener(autoToggle); // persist explicit off states
+      toggleSidebar();
+      return false;
+    }
+    toggle.addEventListener('click', toggler, false);
+
+
+    /* Get <nav id=toc-nav>, or make it if we don't have one. */
+    var tocNav = document.getElementById('toc-nav');
+    if (!tocNav) {
+      tocNav = document.createElement('p');
+      tocNav.id = 'toc-nav';
+      /* Prepend for better keyboard navigation */
+      document.body.insertBefore(tocNav, document.body.firstChild);
+    }
+    /* While we're at it, make sure we have a Jump to Toc link. */
+    var tocJump = document.getElementById('toc-jump');
+    if (!tocJump) {
+      tocJump = document.createElement('a');
+      tocJump.id = 'toc-jump';
+      tocJump.href = '#toc';
+      tocJump.innerHTML = tocJumpText;
+      tocNav.appendChild(tocJump);
+    }
+
+    tocNav.appendChild(toggle);
+  }
+
+  var toc = document.getElementById('toc');
+  if (toc) {
+    createSidebarToggle();
+    toggleSidebar(sidebarMedia.matches);
+
+    /* If the sidebar has been manually opened and is currently overlaying the text
+       (window too small for the MQ to add the margin to body),
+       then auto-close the sidebar once you click on something in there. */
+    toc.addEventListener('click', function(e) {
+      if(e.target.tagName.toLowerCase() == "a" && document.body.classList.contains('toc-sidebar') && !sidebarMedia.matches) {
+        toggleSidebar(false);
+      }
+    }, false);
+  }
+  else {
+    console.warn("Can't find Table of Contents. Please use <nav id='toc'> around the ToC.");
+  }
+
+  /* Wrap tables in case they overflow */
+  var tables = document.querySelectorAll(':not(.overlarge) > table.data, :not(.overlarge) > table.index');
+  var numTables = tables.length;
+  for (var i = 0; i < numTables; i++) {
+    var table = tables[i];
+    var wrapper = document.createElement('div');
+    wrapper.className = 'overlarge';
+    table.parentNode.insertBefore(wrapper, table);
+    wrapper.appendChild(table);
+  }
+
+})();
+</script>
