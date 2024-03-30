@@ -273,7 +273,7 @@ endforeach()
 
 #[[
 
-include ./docs/pfl_add_libraries.md
+include ./docs/PFL_add_libraries.md
 
 ]]
 function(PFL_add_libraries)
