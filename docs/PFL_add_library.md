@@ -10,6 +10,8 @@ PFL.cmake will automatically generate a `*Config.cmake` file for your library.
 ## Arguments
 
 - *option* `DISABLE_INSTALL`
+- *option* `MERGED_HEADER_PLACEMENT`
+  Use merged header placement. This make all header files under src public.
 - *string* `LIBRARY_TYPE`
   `STATIC`, `SHARED` or `HEADER_ONLY`.
   If no `LIBRARY_TYPE` is given the default is STATIC or SHARED
