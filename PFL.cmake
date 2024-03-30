@@ -189,6 +189,10 @@ function(PFL_init)
     set(PFL_INIT_EXTERNAL ${${PFL_INIT_PROJECT_NAME}_EXTERNAL})
   endif()
 
+  if(NOT PFL_INIT_PROJECT_NAME)
+    _pfl_normalize_project_name(PFL_INIT_PROJECT_NAME "${PROJECT_NAME}")
+  endif()
+
   _pfl_normalize_project_name(NORMALIZED_PFL_INIT_PROJECT_NAME
                               "${PFL_INIT_PROJECT_NAME}")
   if(NOT NORMALIZED_PFL_INIT_PROJECT_NAME STREQUAL PFL_INIT_PROJECT_NAME)
