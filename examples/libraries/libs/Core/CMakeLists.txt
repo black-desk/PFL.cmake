@@ -5,4 +5,8 @@ pfl_add_library(
   0
   SOURCES
   ./src/MathUtils/Core/add.cxx
-  ./include/MathUtils/Core/add.hpp)
+  ./include/MathUtils/Core/add.hpp
+  LINK_LIBRARIES
+  PRIVATE
+  m # not really used, just to test target_link_libraries work
+)

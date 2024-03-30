@@ -523,15 +523,13 @@ function(pfl_add_library)
     add_library("${TARGET_FULL_ALIAS_NAME}" ALIAS "${TARGET_FULL_NAME}")
   endif()
 
-  set_target_properties("${TARGET_FULL_NAME}" PROPERTIES EXPORT_NAME
-                                                         ${TARGET_NAME})
-
   if(PFL_ADD_LIBRARY_LINK_LIBRARIES)
-    target_link_libraries(${TARGET_NAME} ${PFL_ADD_LIBRARY_LINK_LIBRARIES})
+    target_link_libraries(${TARGET_FULL_NAME} ${PFL_ADD_LIBRARY_LINK_LIBRARIES})
   endif()
 
   if(PFL_ADD_LIBRARY_COMPILE_FEATURES)
-    target_compile_features(${TARGET_NAME} ${PFL_ADD_LIBRARY_COMPILE_FEATURES})
+    target_compile_features(${TARGET_FULL_NAME}
+                            ${PFL_ADD_LIBRARY_COMPILE_FEATURES})
   endif()
 
   _pfl_add_tests(${PFL_ADD_LIBRARY_TESTS})
@@ -601,6 +599,9 @@ function(pfl_add_library)
 
   _pfl_str_join(TARGET_FULL_PATH_DIR "/" ${_PFL_PATH})
   _pfl_str_join(TARGET_EXPORT_NAMESPACE "::" ${_PFL_PATH})
+
+  set_target_properties("${TARGET_FULL_NAME}" PROPERTIES EXPORT_NAME
+                                                         ${TARGET_NAME})
 
   install(
     EXPORT "${PFL_TARGET_EXPORT_NAME}"
