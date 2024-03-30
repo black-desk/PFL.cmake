@@ -50,9 +50,9 @@ option(XXX_ENABLE_EXTERNAL "Enable external libraries of XXX" "${PROJECT_IS_TOP_
 option(XXX_ENABLE_APPLICATION "Build applications of XXX" ${PROJECT_IS_TOP_LEVEL})
 
 if(${PROJECT_IS_TOP_LEVEL})
-  set(XXX_EXTERNAL_DEFAULT "A;B;C")
+  set(XXX_EXTERNALS_DEFAULT "A;B;C")
 endif()
-option(XXX_EXTERNAL "List of libraries will be embed into XXX" ${XXX_EXTERNAL_DEFAULT})
+option(XXX_EXTERNALS "List of libraries will be embed into XXX" ${XXX_EXTERNALS_DEFAULT})
 
 # include PFL.cmake somehow
 #...
@@ -64,7 +64,7 @@ PFL_init(
   ENABLE_EXAMPLE "${XXX_ENABLE_EXAMPLE}"
   ENABLE_EXTERNAL "${XXX_ENABLE_EXTERNAL}"
   ENABLE_APPLICATION "${XXX_ENABE_APPLICATION}"
-  EXTERNAL "${XXX_EXTERNAL}"
+  EXTERNALS "${XXX_EXTERNALS}"
 )
 ```
 
