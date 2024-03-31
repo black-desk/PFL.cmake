@@ -118,7 +118,7 @@ endfunction()
 include ./docs/PFL_init.md
 
 ]]
-function(PFL_init)
+macro(PFL_init)
   _pfl_check_called_from_project_source_dir(PFL_init)
 
   cmake_parse_arguments(
@@ -200,44 +200,30 @@ function(PFL_init)
       "PROJECT_NAME of PFL_init (\"${PFL_INIT_PROJECT_NAME}\")"
       "should be normalized to \"${NORMALIZED_PFL_INIT_PROJECT_NAME}\".")
   endif()
-  set(PFL_PROJECT_NAME
-      ${PFL_INIT_PROJECT_NAME}
-      PARENT_SCOPE)
+  set(PFL_PROJECT_NAME ${PFL_INIT_PROJECT_NAME})
 
   set(_PFL_PATH)
   list(APPEND _PFL_PATH ${PFL_INIT_PROJECT_NAME})
-  set(_PFL_PATH
-      ${_PFL_PATH}
-      PARENT_SCOPE)
+  set(_PFL_PATH ${_PFL_PATH})
 
-  set(_PFL_BUILD_SHARED_LIBS
-      ${PFL_INIT_BUILD_SHARED_LIBS}
-      PARENT_SCOPE)
-  set(_PFL_ENABLE_INSTALL
-      ${PFL_INIT_ENABLE_INSTALL}
-      PARENT_SCOPE)
-  set(_PFL_ENABLE_TESTING
-      ${PFL_INIT_ENABLE_TESTING}
-      PARENT_SCOPE)
-  set(_PFL_ENABLE_EXAMPLE
-      ${PFL_INIT_ENABLE_EXAMPLE}
-      PARENT_SCOPE)
-  set(_PFL_ENABLE_EXTERNAL
-      ${PFL_INIT_ENABLE_EXTERNAL}
-      PARENT_SCOPE)
-  set(_PFL_ENABLE_APPLICATION
-      ${PFL_INIT_ENABLE_APPLICATION}
-      PARENT_SCOPE)
+  set(_PFL_BUILD_SHARED_LIBS ${PFL_INIT_BUILD_SHARED_LIBS})
+  set(_PFL_ENABLE_INSTALL ${PFL_INIT_ENABLE_INSTALL})
+  set(_PFL_ENABLE_TESTING ${PFL_INIT_ENABLE_TESTING})
+  set(_PFL_ENABLE_EXAMPLE ${PFL_INIT_ENABLE_EXAMPLE})
+  set(_PFL_ENABLE_EXTERNAL ${PFL_INIT_ENABLE_EXTERNAL})
+  set(_PFL_ENABLE_APPLICATION ${PFL_INIT_ENABLE_APPLICATION})
 
-  if(NOT PFL_INIT_ENABLE_EXTERNAL)
-    return()
+  if(PFL_INIT_ENABLE_TESTING)
+    enable_testing()
   endif()
 
-  foreach(EXTERNAL ${PFL_INIT_EXTERNAL})
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/external/${EXTERNAL}
-                     EXCLUDE_FROM_ALL)
-  endforeach()
-endfunction()
+  if(PFL_INIT_ENABLE_EXTERNAL)
+    foreach(EXTERNAL ${PFL_INIT_EXTERNAL})
+      add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/external/${EXTERNAL}
+                       EXCLUDE_FROM_ALL)
+    endforeach()
+  endif()
+endmacro()
 
 set(PFL_add_libraries_default_cmake_config
     [=[
