@@ -42,35 +42,34 @@ if(CMAKE_VERSION VERSION_LESS 3.21)
   endif()
 endif()
 
-option(XXX_BUILD_SHARED_LIBS "Default to build shared library of XXX" ${PROJECT_IS_TOP_LEVEL})
-option(XXX_ENABLE_INSTALL "Enable install target of XXX" ${PROJECT_IS_TOP_LEVEL})
-option(XXX_ENABLE_TESTING "Build and running test of XXX" ${PROJECT_IS_TOP_LEVEL})
-option(XXX_ENABLE_EXAMPLE "Build examples of XXX" ${PROJECT_IS_TOP_LEVEL})
-option(XXX_ENABLE_EXTERNAL "Enable external libraries of XXX" "${PROJECT_IS_TOP_LEVEL}")
-option(XXX_ENABLE_APPLICATION "Build applications of XXX" ${PROJECT_IS_TOP_LEVEL})
+# Define some default options for your project:
+
+option(xxx_BUILD_SHARED_LIBS "Default to build shared library of XXX" ${PROJECT_IS_TOP_LEVEL})
+option(xxx_ENABLE_INSTALL "Enable install target of XXX" ${PROJECT_IS_TOP_LEVEL})
+option(xxx_ENABLE_TESTING "Build and running test of XXX" ${PROJECT_IS_TOP_LEVEL})
+option(xxx_ENABLE_EXAMPLES "Build examples of XXX" ${PROJECT_IS_TOP_LEVEL})
+option(xxx_ENABLE_EXTERNALS "Enable external libraries of XXX" "${PROJECT_IS_TOP_LEVEL}")
+option(xxx_ENABLE_APPLICATIONS "Build applications of XXX" ${PROJECT_IS_TOP_LEVEL})
 
 if(${PROJECT_IS_TOP_LEVEL})
-  set(XXX_EXTERNALS_DEFAULT "A;B;C")
+  set(xxx_EXTERNALS_DEFAULT "A;B;C")
 endif()
-option(XXX_EXTERNALS "List of libraries will be embed into XXX" ${XXX_EXTERNALS_DEFAULT})
+option(xxx_EXTERNALS "List of libraries will be embed into XXX" ${XXX_EXTERNALS_DEFAULT})
 
-# include PFL.cmake somehow
-#...
+include(./cmake/PFL.cmake)
 
 PFL_init(
-  BUILD_SHARED_LIBS "${XXX_BUILD_SHARED_LIBS}"
-  ENABLE_INSTALL "${XXX_ENABLE_INSTALL}"
-  ENABLE_TESTING "${XXX_ENABLE_TESTING}"
-  ENABLE_EXAMPLE "${XXX_ENABLE_EXAMPLE}"
-  ENABLE_EXTERNAL "${XXX_ENABLE_EXTERNAL}"
-  ENABLE_APPLICATION "${XXX_ENABE_APPLICATION}"
-  EXTERNALS "${XXX_EXTERNALS}"
+  BUILD_SHARED_LIBS "${xxx_BUILD_SHARED_LIBS}"
+  ENABLE_INSTALL "${xxx_ENABLE_INSTALL}"
+  ENABLE_TESTING "${xxx_ENABLE_TESTING}"
+  ENABLE_EXAMPLES "${xxx_ENABLE_EXAMPLES}"
+  ENABLE_EXTERNALS "${xxx_ENABLE_EXTERNALS}"
+  ENABLE_APPLICATIONS "${xxx_ENABE_APPLICATIONS}"
+  EXTERNALS "${xxx_EXTERNALS}"
 )
-```
 
-The `PFL_init` function call can be simplified,
-if your project doesn't use any external dependencies:
+# or just
 
-```cmake
 PFL_init(AUTO)
+
 ```
