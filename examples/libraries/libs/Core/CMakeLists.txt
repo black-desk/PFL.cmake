@@ -9,5 +9,4 @@ pfl_add_library(
   ./src/MathUtils/Core/add.hpp
   LINK_LIBRARIES
   PRIVATE
-  m # not really used, just to test target_link_libraries work
-)
+  helloworld::helloworld)

@@ -13,14 +13,13 @@ echo "Try to build all examples..."
 
 build-and-install() {
 	project="$1"
-	pushd "$project"
-	rm build -rf
-	mkdir build
-	pushd build
-	cmake .. -DBUILD_SHARED_LIBS=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$REPOSITORY/tests/build-install-prefix"
+	rm "$project/build" -rf
+	mkdir "$project/build"
+	pushd "$project/build"
+	cmake .. --warn-uninitialized -Werror=dev \
+		-DCMAKE_INSTALL_PREFIX="$REPOSITORY/tests/build-install-prefix"
 	cmake --build .
 	make install
-	popd
 	popd
 }
 
@@ -35,15 +34,21 @@ echo "Try to build all examples...Done"
 rm build -rf
 mkdir build
 pushd build
-cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=1 -DCMAKE_PREFIX_PATH="$(pwd)/../build-install-prefix"
+
+# FIXME:
+# We should add -Werror=dev,
+# but cmake 3.29.0 failed with -Werror=dev for accessing uninitialized variable
+# _cmake_import_check_xcframework_for_*.
+cmake .. --warn-uninitialized \
+	-DCMAKE_EXPORT_COMPILE_COMMANDS=1 \
+	-DCMAKE_PREFIX_PATH="$(pwd)/../build-install-prefix"
 cmake --build .
 popd
 
 while IFS= read -r line; do
 	if [ -f "$line" ] || [ -d "$line" ]; then
-                continue;
-        fi
-        echo "Expected $line but not found."
-        exit 255
+		continue
+	fi
+	echo "Expected $line but not found."
+	exit 255
 done <expected-files
-
