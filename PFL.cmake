@@ -525,8 +525,10 @@ function(pfl_add_library)
                           PROPERTIES VERSION ${PFL_ADD_LIBRARY_VERSION})
   endif()
 
-  set_target_properties("${TARGET_FULL_NAME}"
-                        PROPERTIES OUTPUT_NAME ${PFL_ADD_LIBRARY_OUTPUT_NAME})
+  if(NOT "${PFL_ADD_LIBRARY_LIBRARY_TYPE}" STREQUAL "HEADER_ONLY")
+    set_target_properties("${TARGET_FULL_NAME}"
+                          PROPERTIES OUTPUT_NAME ${PFL_ADD_LIBRARY_OUTPUT_NAME})
+  endif()
 
   if(NOT "${TARGET_FULL_ALIAS_NAME}" STREQUAL "${TARGET_FULL_NAME}")
     add_library("${TARGET_FULL_ALIAS_NAME}" ALIAS "${TARGET_FULL_NAME}")
