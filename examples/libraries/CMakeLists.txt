@@ -10,4 +10,4 @@ include(PFL)
 
 pfl_init(AUTO)
 
-pfl_add_libraries(LIBS Core EXAMPLES example1)
+pfl_add_libraries(LIBS Internal Core EXAMPLES example1)

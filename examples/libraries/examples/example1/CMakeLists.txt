@@ -6,4 +6,5 @@ pfl_add_executable(
   ./src/main.cpp
   LINK_LIBRARIES
   PRIVATE
-  MathUtils::Core)
+  MathUtils::Core
+  MathUtils::Internal)

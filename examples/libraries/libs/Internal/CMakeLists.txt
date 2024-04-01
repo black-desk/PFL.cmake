@@ -1,0 +1,9 @@
+pfl_add_library(
+  DISABLE_INSTALL
+  LIBRARY_TYPE
+  STATIC
+  OUTPUT_NAME
+  MathUtilsInternal
+  SOURCES
+  ./src/MathUtils/Internal/test.cpp
+  ./include/MathUtils/Internal/test.hpp)
