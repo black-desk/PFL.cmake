@@ -7,6 +7,9 @@ pfl_add_library(
   SOURCES
   ./src/MathUtils/Core/add.cxx
   ./src/MathUtils/Core/add.hpp
+  DEPENDENCIES
+  PUBLIC
+  "helloworld REQUIRED"
   LINK_LIBRARIES
   PRIVATE
   helloworld::helloworld)

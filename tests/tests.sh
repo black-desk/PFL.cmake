@@ -17,6 +17,7 @@ build-and-install() {
 	mkdir "$project/build"
 	pushd "$project/build"
 	cmake .. --warn-uninitialized -Werror=dev \
+		-DCMAKE_EXPORT_COMPILE_COMMANDS=1 \
 		-DCMAKE_INSTALL_PREFIX="$REPOSITORY/tests/build-install-prefix"
 	cmake --build .
 	make install

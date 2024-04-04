@@ -157,16 +157,14 @@ macro(PFL_init) # NOTE: As we might call enable_testing() in `PFL_init`, it have
       ENABLE_APPLICATIONS # boolean
   )
   set(MULTI_VALUE_KEYWORDS
-      # Directories under ${CMAKE_CURRENT_SOURCE_DIR}/externals
-      # that contains third party projects current project depends on.
-      # These projects will be added one by one using add_subdirectory(),
-      # if `ENABLE_EXTERNALS` is set to true value.
-      # NOTE:
-      # You might need add some FindXXX.cmake in your ${CMAKE_MODULE_PATH}
-      # to prevent further find_package() and find_dependency() calls
-      # from finding these projects from host system.
-      EXTERNALS # list of relative file path
-  )
+      # List of third party projects which current project depends on.
+      # Each string in this list indicate a external project in this syntax:
+      # "DIRECTORY PACKAGE"
+      # It means that the external project
+      # in ${CMAKE_CURRENT_SOURCE_DIR}/external/<DIRECTORY>
+      # should override find_package(<PACKAGE>),
+      # when `ENABLE_EXTERNALS` is true.
+      EXTERNALS)
   _pfl_parse_arguments(${ARGN})
 
   _pfl_project_is_top_level()
@@ -215,11 +213,37 @@ macro(PFL_init) # NOTE: As we might call enable_testing() in `PFL_init`, it have
     enable_testing()
   endif()
 
+  macro(generate_find_for_external PACKAGE TARGET)
+    # message(FATAL_ERROR "${PACKAGE} ${TARGET}")
+    if(NOT EXISTS
+       ${CMAKE_CURRENT_SOURCE_DIR}/external/${PACKAGE}/CMakeLists.txt)
+      _pfl_fatal(
+        "${DIRECTORY} is not a external project:"
+        "${CMAKE_CURRENT_SOURCE_DIR}/external/${DIRECTORY}/CMakeLists.txt not found."
+      )
+    endif()
+
+    set(FIND_FILE
+        ${CMAKE_CURRENT_BINARY_DIR}/_pfl_external/Find${PACKAGE}.cmake)
+    file(
+      WRITE ${FIND_FILE}
+      "if(TARGET ${TARGET})\n" #
+      "  return()\n" #
+      "endif()\n" #
+      "add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/${PACKAGE})\n"
+      "set(${PACKAGE}_FOUND YES)")
+  endmacro()
+
   if(${PROJECT_NAME}_ENABLE_EXTERNALS AND DEFINED ${PROJECT_NAME}_EXTERNALS)
+    list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_BINARY_DIR}/_pfl_external)
     foreach(EXTERNAL ${${PROJECT_NAME}_EXTERNALS})
-      add_subdirectory(${PROJECT_SOURCE_DIR}/external/${EXTERNAL}
-                       EXCLUDE_FROM_ALL)
-      # TODO: Check ths NOTE of EXTERNALS parameters, consider automatically produce a FindXXX.cmake for external project.
+      string(REPLACE " " ";" EXTERNAL "${EXTERNAL}")
+      list(GET EXTERNAL 0 PACKAGE_NAME)
+      _pfl_info(
+        "Using external project ${PACKAGE_NAME} at ${CMAKE_CURRENT_SOURCE_DIR}/external/${PACKAGE_NAME}"
+      )
+      generate_find_for_external(${EXTERNAL})
+      find_package(${PACKAGE_NAME} REQUIRED)
     endforeach()
   endif()
 endmacro()
@@ -306,7 +330,7 @@ function(PFL_add_libraries)
 
   set(CONFIG_FILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/${CONFIG_FILE}.in)
   if(NOT EXISTS ${CONFIG_FILE_IN})
-    write_file(${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILE}.in
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILE}.in
                ${PFL_add_libraries_default_cmake_config})
     set(CONFIG_FILE_IN ${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILE}.in)
   endif()
@@ -434,6 +458,17 @@ function(_pfl_handle_sources PUBLIC_OUT PRIVATE_OUT MERGED_PLACEMENT) # SOURCES
       PARENT_SCOPE)
 endfunction()
 
+function(_pfl_handle_dependencies)
+  foreach(DEPENDENCY ${ARGN})
+    if("${DEPENDENCY}" STREQUAL "PUBLIC" OR "${DEPENDENCY}" STREQUAL "PRIVATE")
+      continue()
+    else()
+      string(REPLACE " " ";" DEPENDENCY ${DEPENDENCY})
+      find_package(${DEPENDENCY})
+    endif()
+  endforeach()
+endfunction()
+
 macro(_pfl_add_target_common)
   if(DEFINED PFL_ARG_LINK_LIBRARIES)
     target_link_libraries(${TARGET} ${PFL_ARG_LINK_LIBRARIES})
@@ -443,10 +478,8 @@ macro(_pfl_add_target_common)
     target_compile_features(${TARGET} ${PFL_ARG_COMPILE_FEATURES})
   endif()
 
-  if(DEFINED PFL_ARG_FIND_DEPENDENCIES)
-    foreach(FIND_DEPENDENCY IN LISTS ${PFL_ARG_FIND_DEPENDENCIES})
-      find_package(${FIND_DEPENDENCY})
-    endforeach()
+  if(DEFINED PFL_ARG_DEPENDENCIES)
+    _pfl_handle_dependencies(${PFL_ARG_DEPENDENCIES})
   endif()
 endmacro()
 
@@ -554,14 +587,23 @@ function(pfl_add_library)
       # These directories were expected to have a CMakeLists.txt,
       # which call pfl_add_executable().
       EXAMPLES
-      # Arguments pass to find_package() while building and
+      # Arguments pass to find_package()
+      # to make sure your dependencies is founded.
+      # pfl_add_library (
+      #   ...
+      #   DEPENDENCIES
+      #     PUBLIC "aaa COMPONENTS xxx REQUIRED"
+      #     PRIVATE "bbb REQUIRED"
+      #   ...
+      # )
+      # PRIVATE while building and
       # find_dependency() in auto-generated `*Config.cmake` file.
       # NOTE:
       # PFL.cmake is going to use these arguments to:
       # 1. Call find_package for your before build your library.
       # 2. Call find_dependency in the export file of your library,
       #    if install targets of your library is enabled.
-      FIND_DEPENDENCIES
+      DEPENDENCIES
       # Arguments passed to target_link_libraries().
       LINK_LIBRARIES
       # Arguments passed to target_compile_features().
@@ -753,7 +795,7 @@ function(pfl_add_library)
 
   set(CONFIG_FILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/${CONFIG_FILE}.in)
   if(NOT EXISTS ${CONFIG_FILE_IN})
-    write_file(${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILE}.in
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILE}.in
                ${PFL_add_library_default_cmake_config})
     set(CONFIG_FILE_IN ${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILE}.in)
   endif()
@@ -763,9 +805,23 @@ function(pfl_add_library)
   set(cmakeModulesDir cmake)
 
   set(PFL_FIND_DEPENDENCIES)
-  foreach(ARGUMENTS ${PFL_ARG_FIND_DEPENDENCIES})
+  set(PROPAGATE PRIVATE)
+  foreach(DEPENDENCY ${PFL_ARG_DEPENDENCIES})
+    if("${DEPENDENCY}" STREQUAL "PUBLIC")
+      set(PROPAGATE PUBLIC)
+      continue()
+    elseif("${DEPENDENCY}" STREQUAL "PRIVATE")
+      set(PROPAGATE PRIVATE)
+      continue()
+    endif()
+
+    if("${PROPAGATE}" STREQUAL "PRIVATE")
+      _pfl_warn("Skip private dependency: ${DEPENDENCY}")
+      continue()
+    endif()
+
     set(PFL_FIND_DEPENDENCIES
-        "${PFL_FIND_DEPENDENCIES}find_dependency(${ARGUMENTS})\n")
+      "${PFL_FIND_DEPENDENCIES}find_dependency(${DEPENDENCY})\n")
   endforeach()
   configure_package_config_file(
     ${CONFIG_FILE_IN} ${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILE}
@@ -809,7 +865,7 @@ function(PFL_add_executable)
       #            and ${CMAKE_CURRENT_SOURCE_DIR}/include ]
       SOURCES
       # Arguments pass to find_package() before build your executable.
-      FIND_DEPENDENCIES
+      DEPENDENCIES
       # Arguments passed to target_link_libraries().
       LINK_LIBRARIES
       # Arguments passed to target_compile_features().

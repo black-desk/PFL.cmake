@@ -8,6 +8,6 @@ project(
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(PFL)
 
-pfl_init(EXTERNALS helloworld)
+pfl_init(EXTERNALS "helloworld helloworld::helloworld")
 
 pfl_add_libraries(LIBS Internal Core EXAMPLES example1)
