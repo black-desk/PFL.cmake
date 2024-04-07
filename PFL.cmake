@@ -331,7 +331,7 @@ function(PFL_add_libraries)
   set(CONFIG_FILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/${CONFIG_FILE}.in)
   if(NOT EXISTS ${CONFIG_FILE_IN})
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILE}.in
-               ${PFL_add_libraries_default_cmake_config})
+         ${PFL_add_libraries_default_cmake_config})
     set(CONFIG_FILE_IN ${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILE}.in)
   endif()
 
@@ -458,17 +458,6 @@ function(_pfl_handle_sources PUBLIC_OUT PRIVATE_OUT MERGED_PLACEMENT) # SOURCES
       PARENT_SCOPE)
 endfunction()
 
-function(_pfl_handle_dependencies)
-  foreach(DEPENDENCY ${ARGN})
-    if("${DEPENDENCY}" STREQUAL "PUBLIC" OR "${DEPENDENCY}" STREQUAL "PRIVATE")
-      continue()
-    else()
-      string(REPLACE " " ";" DEPENDENCY ${DEPENDENCY})
-      find_package(${DEPENDENCY})
-    endif()
-  endforeach()
-endfunction()
-
 macro(_pfl_add_target_common)
   if(DEFINED PFL_ARG_LINK_LIBRARIES)
     target_link_libraries(${TARGET} ${PFL_ARG_LINK_LIBRARIES})
@@ -483,7 +472,15 @@ macro(_pfl_add_target_common)
   endif()
 
   if(DEFINED PFL_ARG_DEPENDENCIES)
-    _pfl_handle_dependencies(${PFL_ARG_DEPENDENCIES})
+    foreach(DEPENDENCY ${PFL_ARG_DEPENDENCIES})
+      if("${DEPENDENCY}" STREQUAL "PUBLIC" OR "${DEPENDENCY}" STREQUAL
+                                              "PRIVATE")
+        continue()
+      endif()
+
+      string(REPLACE " " ";" DEPENDENCY ${DEPENDENCY})
+      find_package(${DEPENDENCY})
+    endforeach()
   endif()
 endmacro()
 
@@ -802,7 +799,7 @@ function(pfl_add_library)
   set(CONFIG_FILE_IN ${CMAKE_CURRENT_SOURCE_DIR}/${CONFIG_FILE}.in)
   if(NOT EXISTS ${CONFIG_FILE_IN})
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILE}.in
-               ${PFL_add_library_default_cmake_config})
+         ${PFL_add_library_default_cmake_config})
     set(CONFIG_FILE_IN ${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILE}.in)
   endif()
 
@@ -827,7 +824,7 @@ function(pfl_add_library)
     endif()
 
     set(PFL_FIND_DEPENDENCIES
-      "${PFL_FIND_DEPENDENCIES}find_dependency(${DEPENDENCY})\n")
+        "${PFL_FIND_DEPENDENCIES}find_dependency(${DEPENDENCY})\n")
   endforeach()
   configure_package_config_file(
     ${CONFIG_FILE_IN} ${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_FILE}
