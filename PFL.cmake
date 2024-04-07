@@ -690,11 +690,20 @@ function(pfl_add_library)
     set_target_properties("${TARGET}" PROPERTIES SOVERSION ${PFL_ARG_SOVERSION})
   endif()
 
+  if(DEFINED PFL_ARG_VERSION)
+    if("${PFL_ARG_LIBRARY_TYPE}" STREQUAL "HEADER_ONLY")
+      _pfl_fatal(
+        "VERSION is not available for HEADER_ONLY library ${TARGET_ALIAS}.")
+    endif()
+  endif()
+
   if(NOT DEFINED PFL_ARG_VERSION)
     set(PFL_ARG_VERSION ${PROJECT_VERSION})
   endif()
 
-  set_target_properties("${TARGET}" PROPERTIES VERSION ${PFL_ARG_VERSION})
+  if(NOT "${PFL_ARG_LIBRARY_TYPE}" STREQUAL "HEADER_ONLY")
+    set_target_properties("${TARGET}" PROPERTIES VERSION ${PFL_ARG_VERSION})
+  endif()
 
   if(DEFINED PFL_ARG_OUTPUT_NAME AND "${PFL_ARG_LIBRARY_TYPE}" STREQUAL
                                      "HEADER_ONLY")
