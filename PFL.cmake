@@ -478,6 +478,10 @@ macro(_pfl_add_target_common)
     target_compile_features(${TARGET} ${PFL_ARG_COMPILE_FEATURES})
   endif()
 
+  if(DEFINED PFL_ARG_COMPILE_OPTIONS)
+    target_compile_options(${TARGET} ${PFL_ARG_COMPILE_OPTIONS})
+  endif()
+
   if(DEFINED PFL_ARG_DEPENDENCIES)
     _pfl_handle_dependencies(${PFL_ARG_DEPENDENCIES})
   endif()
@@ -607,7 +611,9 @@ function(pfl_add_library)
       # Arguments passed to target_link_libraries().
       LINK_LIBRARIES
       # Arguments passed to target_compile_features().
-      COMPILE_FEATURES)
+      COMPILE_FEATURES
+      # Arguments passed to target_compile_options().
+      COMPILE_OPTIONS)
   _pfl_parse_arguments(${ARGN})
   _pfl_current_compoent()
 
@@ -869,7 +875,9 @@ function(PFL_add_executable)
       # Arguments passed to target_link_libraries().
       LINK_LIBRARIES
       # Arguments passed to target_compile_features().
-      COMPILE_FEATURES)
+      COMPILE_FEATURES
+      # Arguments passed to target_compile_options().
+      COMPILE_OPTIONS)
   _pfl_parse_arguments(${ARGN})
   _pfl_current_compoent()
 
