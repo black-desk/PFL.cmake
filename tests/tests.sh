@@ -18,7 +18,8 @@ build-and-install() {
 	pushd "$project/build"
 	cmake .. --warn-uninitialized -Werror=dev \
 		-DCMAKE_EXPORT_COMPILE_COMMANDS=1 \
-		-DCMAKE_INSTALL_PREFIX="$REPOSITORY/tests/build-install-prefix"
+		-DCMAKE_INSTALL_PREFIX="$REPOSITORY/tests/build-install-prefix" \
+		-DCMAKE_GENERATOR="Unix Makefiles"
 	cmake --build .
 	make install
 	popd
