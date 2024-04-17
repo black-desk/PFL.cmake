@@ -672,7 +672,7 @@ function(pfl_add_library)
   if("${PFL_ARG_LIBRARY_TYPE}" STREQUAL "HEADER_ONLY")
     set(BUILD_LIBRARY_NAME ${TARGET}__BUILD)
     add_library(${BUILD_LIBRARY_NAME} STATIC)
-    target_link_libraries(${BUILD_LIBRARY_NAME} PRIVATE ${TARGET_NAME})
+    target_link_libraries(${BUILD_LIBRARY_NAME} PRIVATE ${TARGET})
   endif()
 
   target_sources(${BUILD_LIBRARY_NAME} PRIVATE ${PRIVATE_SOURCES})
