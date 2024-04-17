@@ -711,17 +711,16 @@ function(pfl_add_library)
                "for HEADER_ONLY library ${TARGET_ALIAS}.")
   endif()
 
-  if(NOT "${PFL_ARG_LIBRARY_TYPE}" STREQUAL "HEADER_ONLY")
-    if(NOT DEFINED PFL_ARG_OUTPUT_NAME)
-      set(PFL_ARG_OUTPUT_NAME "${TARGET}")
-      if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
-        set(PFL_ARG_OUTPUT_NAME ${PFL_CURRENT_COMPOENT})
-      endif()
-
-      _pfl_warn("OUTPUT_NAME of ${TARGET_ALIAS} not set,"
-                "using ${PFL_ARG_OUTPUT_NAME}")
+  if(NOT DEFINED PFL_ARG_OUTPUT_NAME)
+    set(PFL_ARG_OUTPUT_NAME "${TARGET}")
+    if("${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
+      set(PFL_ARG_OUTPUT_NAME ${PFL_CURRENT_COMPOENT})
     endif()
+  endif()
 
+  if(NOT "${PFL_ARG_LIBRARY_TYPE}" STREQUAL "HEADER_ONLY")
+    _pfl_warn("OUTPUT_NAME of ${TARGET_ALIAS} not set,"
+              "using ${PFL_ARG_OUTPUT_NAME}")
     set_target_properties("${TARGET}" PROPERTIES OUTPUT_NAME
                                                  ${PFL_ARG_OUTPUT_NAME})
   endif()
