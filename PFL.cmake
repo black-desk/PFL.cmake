@@ -719,10 +719,12 @@ function(pfl_add_library)
   endif()
 
   if(NOT "${PFL_ARG_LIBRARY_TYPE}" STREQUAL "HEADER_ONLY")
-    _pfl_warn("OUTPUT_NAME of ${TARGET_ALIAS} not set,"
-              "using ${PFL_ARG_OUTPUT_NAME}")
     set_target_properties("${TARGET}" PROPERTIES OUTPUT_NAME
                                                  ${PFL_ARG_OUTPUT_NAME})
+    if(NOT PFL_ARG_DISABLE_INSTALL)
+      _pfl_warn("OUTPUT_NAME of ${TARGET_ALIAS} not set,"
+                "using ${PFL_ARG_OUTPUT_NAME}")
+    endif()
   endif()
 
   _pfl_add_target_common()
