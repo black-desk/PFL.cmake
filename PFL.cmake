@@ -936,3 +936,19 @@ function(PFL_add_executable)
 
   install(TARGETS ${TARGET} DESTINATION ${CMAKE_INSTALL_BINDIR})
 endfunction()
+
+function(_pfl_get_real_target OUTPUT TARGET)
+  get_target_property("${OUTPUT}" "${TARGET}" ALIASED_TARGET)
+  if("${OUTPUT}" STREQUAL "")
+    set("${OUTPUT}" "${TARGET}")
+  endif()
+  set("${OUTPUT}"
+      ${${OUTPUT}}
+      PARENT_SCOPE)
+endfunction()
+
+function(pfl_catch_discover_tests TARGET)
+  _pfl_get_real_target(TARGET "${TARGET}" ALIASED_TARGET)
+  include(Catch)
+  catch_discover_tests("${TARGET}")
+endfunction()
