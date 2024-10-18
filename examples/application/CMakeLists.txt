@@ -8,5 +8,5 @@ project(
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(PFL)
 
-pfl_init(AUTO)
+pfl_init()
 pfl_add_executable(SOURCES src/main.cpp)
