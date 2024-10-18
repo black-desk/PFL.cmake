@@ -481,6 +481,10 @@ macro(_pfl_add_target_common)
     target_compile_options(${TARGET} ${PFL_ARG_COMPILE_OPTIONS})
   endif()
 
+  if(DEFINED PFL_ARG_LINK_OPTIONS)
+    target_link_options(${TARGET} ${PFL_ARG_LINK_OPTIONS})
+  endif()
+
   if(DEFINED PFL_ARG_DEPENDENCIES)
     foreach(DEPENDENCY ${PFL_ARG_DEPENDENCIES})
       if("${DEPENDENCY}" STREQUAL "PUBLIC" OR "${DEPENDENCY}" STREQUAL
@@ -620,7 +624,9 @@ function(pfl_add_library)
       # Arguments passed to target_compile_features().
       COMPILE_FEATURES
       # Arguments passed to target_compile_options().
-      COMPILE_OPTIONS)
+      COMPILE_OPTIONS
+      # Arguments passed to target_link_options().
+      LINK_OPTIONS)
   _pfl_parse_arguments(${ARGN})
   _pfl_current_compoent()
 
@@ -894,7 +900,9 @@ function(PFL_add_executable)
       # Arguments passed to target_compile_features().
       COMPILE_FEATURES
       # Arguments passed to target_compile_options().
-      COMPILE_OPTIONS)
+      COMPILE_OPTIONS
+      # Arguments passed to target_link_options().
+      LINK_OPTIONS)
   _pfl_parse_arguments(${ARGN})
   _pfl_current_compoent()
 
