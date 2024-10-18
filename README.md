@@ -22,7 +22,7 @@ For futher information, check [examples] and [documents].
 
 [PFL.cmake]: https://github.com/black-desk/PFL.cmake/releases/latest/download/PFL.cmake
 
-[the Pitchfork layout]: https://github.com/vector-of-bool/pitchfork/blob/develop/data/spec.bs
+[the Pitchfork layout]: https://black-desk.github.io/pages/pintchfork-layout.html
 
 [examples]: https://github.com/black-desk/PFL.cmake/tree/master/examples
 
